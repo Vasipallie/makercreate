@@ -7,13 +7,31 @@
   flex-direction: column;
   font-size: calc(10px + 2vmin);
   color: white;
-  padding: 1vmin;
+  padding: 1rem;
   box-sizing: border-box;
 }
 
+.topbar{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.logo{
+  width: clamp(72px, 10vw, 132px);
+  height: auto;
+  object-fit: contain;
+  margin-left:-1rem;
+}
+.vmodelx{
+  justify-content:flex-end;
+}
 .App-header h1 {
   margin: 0;
-  line-height: 1.1;
+  line-height: 0.7;
+  font-size: calc(16px + 10vmin);
 }
 
 .App-header p {
@@ -43,8 +61,10 @@ a:hover{
 }
 .navbar{
   display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 }
 .crt {
   position: relative;
@@ -95,4 +115,48 @@ html,body{
 
 .App-link {
   color: #61dafb;
+}
+
+.vmodels{
+  margin:0;
+  border: 7px double #f5f5f5;
+  width: 30vw;
+  height: 30vw;
+  display: flex;
+  flex-direction: column;
+}
+.vtitle{
+  font-size: calc(8px + 1vmin);
+  font-weight: 800;
+  padding:0.1rem;
+  font-family: "Questrial", sans-serif;
+  color: #000000;
+  background-color: #ffffff;
+  display:flex;
+  flex-direction: row;
+  width: 100%;
+  box-sizing: border-box;
+}
+.modelholder{
+  display: flex;
+  flex-direction: row;
+  gap: 0.8rem;
+  width: 100%;
+  margin-top: 1rem;
+  justify-content: center;
+}
+.vmodel-x{
+  margin-left: auto;
+}
+
+.Viewer{
+  flex: 1;
+  min-height: 0;
+}
+
+.Viewer iframe{
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
 }
