@@ -7,7 +7,7 @@ function App() {
       <div className="navbar">  
         <a href="https://makerprint.fillout.com/rsvp" target="_blank" rel="noopener noreferrer">[R] RSVP</a>
         <a href="https://hackclub.enterprise.slack.com/archives/C0AGB5HP066" target="_blank" rel="noopener noreferrer">[S] Slack</a>
-        <a href="" target="_blank" rel="noopener noreferrer">[G] GitHub</a>
+        <a href="https://github.com/vasipallie/makercreate" target="_blank" rel="noopener noreferrer">[G] GitHub</a>
         <a href="/console">[C] Console (WIP)</a>
       </div>
       <h1>MakerCreate.</h1>
