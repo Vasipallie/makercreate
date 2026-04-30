@@ -165,6 +165,12 @@ html,body{
   display: block;
   border: 0;
 }
+
+.Viewer canvas{
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
 .estarimg{
   width:30vw;
   height: auto;
@@ -180,16 +186,33 @@ html,body{
   color: #00FF00;
   margin: 0.2rem 0 0;
 }
-
+button{
+  font-family: "Questrial", sans-serif;
+  border: none;
+  font-size: calc(8px + 1.5vmin);
+  border-radius: 0.2rem;
+  padding: 0.5em 1em;
+  font-weight: 700;
+  margin: 1rem auto 0;
+  width: 100%;
+  cursor:pointer;
+  text-align: center;
+}
 /* TESTING USE ONLY (BELOW) */
 .visible{
-  display:none;
+  display:block;
 }
 .crtvideo{
   font-family: monospace, sans-serif;
-  display:block;
+  display:none;
 }
 /* TESTING USE ONLY (ABOVE) */
+
+.ruleholder{
+  display:flex;
+  flex-direction:row;
+  gap:1rem;
+}
 .boottext-title{
   display:flex;
   flex-direction: column;
