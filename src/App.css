@@ -1,4 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
+@font-face{
+  font-family:'bms';
+  src: url('bms.ttf') format('truetype');
+}
 .App-header {
   font-family: "Questrial", sans-serif;
   background-color: #0C0C0C;
@@ -26,6 +30,7 @@
   margin-left:-1rem;
 }
 .vmodelx{
+  display: flex;
   justify-content:flex-end;
 }
 .App-header h1 {
@@ -43,7 +48,7 @@ subtitle{
   color: #00FF00;
   margin: 0.2rem 0 0;
 }
-a{
+.navi{
   background-color: #181818;
   color: #00FF00;
   padding: 0.5rem 1rem;
@@ -159,4 +164,46 @@ html,body{
   height: 100%;
   display: block;
   border: 0;
+}
+.estarimg{
+  width:30vw;
+  height: auto;
+  margin-left: auto;
+}
+.estar{
+  width: 100%;
+  display: block;
+}
+.orpheus-title{
+  font-family: 'bms', monospace;
+  font-size: calc(8px + 1.5vmin);
+  color: #00FF00;
+  margin: 0.2rem 0 0;
+}
+
+/* TESTING USE ONLY (BELOW) */
+.visible{
+  display:none;
+}
+.crtvideo{
+  font-family: monospace, sans-serif;
+  display:block;
+}
+/* TESTING USE ONLY (ABOVE) */
+.boottext-title{
+  display:flex;
+  flex-direction: column;
+  padding:1rem;
+}
+.boottext{
+  color: #ffffff;
+  margin: 0.2rem 0 0;
+  display:flex;
+  flex-direction: row;
+  width:40vw;
+}
+.Holding{
+  display:flex;
+  width:100%;
+  flex-direction:row;
 }
