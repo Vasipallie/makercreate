@@ -26,7 +26,7 @@ function App() {
         <div className="vmodels">
           <div className="vtitle"><span>PROJECT 1</span> <span className="vmodel-x">X</span></div>
           <div className="Viewer">
-            <STLViewer url="/models/plan.stl" title="Project 1" />
+            <STLViewer url="/models/ai.stl" title="Project 1" />
           </div>
         </div>
 

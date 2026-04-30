@@ -31,9 +31,9 @@ function STLModel({ url }) {
   return (
     <mesh geometry={geometry} castShadow receiveShadow rotation={[Math.PI / -2, 0, 0]}>
       <meshStandardMaterial 
-        color="#2abb31" 
-        metalness={0.3}
-        roughness={0.3}
+        color="#06b100" 
+        metalness={0}
+        roughness={0.9}
         envMapIntensity={1}
       />
     </mesh>
@@ -51,7 +51,19 @@ export function STLViewer({ url, title = 'Model' }) {
       
       <directionalLight
         position={[0, 0, 20]}
-        intensity={1.2}
+        intensity={3}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-far={500}
+        shadow-camera-left={-200}
+        shadow-camera-right={200}
+        shadow-camera-top={200}
+        shadow-camera-bottom={-200}
+      />
+      <directionalLight
+        position={[0, 20, 50]}
+        intensity={3}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -67,7 +79,7 @@ export function STLViewer({ url, title = 'Model' }) {
       
       <OrbitControls 
         autoRotate 
-        autoRotateSpeed={3}
+        autoRotateSpeed={2}
         enableDamping
         dampingFactor={0.05}
         enableZoom
