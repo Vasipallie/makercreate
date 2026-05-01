@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Grid, Environment } from '@react-three/drei';
-import * as THREE from 'three';
+import { OrbitControls } from '@react-three/drei';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 
 function STLModel({ url }) {
@@ -40,7 +39,7 @@ function STLModel({ url }) {
   );
 }
 
-export function STLViewer({ url, title = 'Model' }) {
+export function STLViewer({ url }) {
   return (
     <Canvas 
       camera={{ position: [0, 0, 200], fov:80 }}
