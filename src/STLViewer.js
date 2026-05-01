@@ -62,7 +62,7 @@ export function STLViewer({ url, title = 'Model' }) {
         shadow-camera-bottom={-200}
       />
       <directionalLight
-        position={[0, 20, 50]}
+        position={[0, 0, -20]}
         intensity={3}
         castShadow
         shadow-mapSize-width={2048}
