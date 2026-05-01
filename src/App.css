@@ -10,6 +10,8 @@
   display: flex;
   flex-direction: column;
   font-size: calc(10px + 2vmin);
+  line-height: 1.5;
+  letter-spacing: 0.01em;
   color: white;
   padding: 1rem;
   box-sizing: border-box;
@@ -35,8 +37,9 @@
 }
 .App-header h1 {
   margin: 0;
-  line-height: 0.7;
-  font-size: calc(16px + 10vmin);
+  line-height: 0.9;
+  font-size: clamp(3rem, 10vw, 7rem);
+  letter-spacing: -0.04em;
 }
 
 .App-header p {
@@ -44,9 +47,24 @@
   line-height: 1.3;
 }
 subtitle{
-  font-size: calc(8px + 1.5vmin);
-  color: #00FF00;
-  margin: 0.2rem 0 0;
+  display: block;
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  color: #9fffae;
+  margin: 0.35rem 0 1rem;
+  line-height: 1.4;
+}
+.App-header h2 {
+  font-size: clamp(1.35rem, 3vw, 2.2rem);
+  line-height: 1.15;
+  margin: 1.75rem 0 0.75rem;
+  letter-spacing: -0.02em;
+}
+.App-header p,
+.rules li,
+.console-body p {
+  font-size: clamp(0.98rem, 1.5vw, 1.15rem);
+  line-height: 1.65;
+  max-width: 70ch;
 }
 .navi{
   background-color: #181818;
@@ -198,20 +216,45 @@ button{
   cursor:pointer;
   text-align: center;
 }
-/* TESTING USE ONLY (BELOW) */
 .visible{
   display:block;
 }
-.crtvideo{
-  font-family: monospace, sans-serif;
-  display:none;
+.console-body{
+  font-family:'bms', monospace;
+  background-color: #181818;
+  color: #00FF00;
+  padding: 1rem;
 }
-/* TESTING USE ONLY (ABOVE) */
-
+.console-title{
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f2f2f2;
+  margin: 1rem 0 0.5rem;
+}
+.rules span,
+.vtitle,
+.orpheus-title{
+  letter-spacing: 0.02em;
+}
+.rules span{
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  font-weight: 700;
+}
 .ruleholder{
   display:flex;
   flex-direction:row;
   gap:1rem;
+}
+.rules ul{
+  margin: 0;
+  padding-left: 1.25rem;
+}
+.rules li{
+  margin-bottom: 0.45rem;
 }
 .boottext-title{
   display:flex;

@@ -46,10 +46,21 @@ function App() {
       </div>
       <center><button onClick={rsvp}>RSVP for MakerCreate</button></center>
       
+     {/*  <div className="console">
+        <div className="console-title">Console (WIP)</div>
+        <div className="console-body">
+          <img src="/orpheus.png" width="60vw" alt="Orpheus" className="orpheus" />
+          <p>Orpheus OS <br></br> Hackclub Systems Inc.</p>
+        </div>
+      </div> */}
+
       <hr></hr>
       <h2>What is MakerCreate?</h2>
       <p>MakerCreate is a YSWS (You Ship, We Ship) program @ HackClub. You spend time designing CAD projects on an editor of your choice, and we ship you a 3D printer of your choice!</p>
       
+        <svg width="30px" viewBox="0 0 12 10" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M1 0H7V1H1V0ZM1 6V1H0V9H1V10H11V9H12V3H11V2H8V1H7V2H8V3H11V4H3V5H2V6H1ZM1 7V9H11V5H3V6H2V7H1Z" fill="currentColor"></path>
+        </svg>
         <h2>Rules and Guidelines of MakerCreate.</h2>
       <div className="ruleholder">
       <div className="rules">
@@ -72,27 +83,6 @@ function App() {
         </div>
       </div>
       </div>
-
-      <div className="crtvideo">
-        <div className="Holding">
-
-          <div className="boottext">
-            <div>
-              <img src="orpheus.png" alt="Orpheus" className="orpheus" width="100vw" />
-            </div>
-            <div className="boottext-title">
-              <p className="orpheus-title">Orpheus Inc.</p>
-              <p className="orpheus-title">HackClub Systems</p>
-            </div>
-          </div>
-
-          <div className="estarimg">
-            <img src="/energystar.png"  className="estar" />
-          </div>
-
-        </div>
-      </div>
-
     </div>
   );
 }
