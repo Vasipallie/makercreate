@@ -2,7 +2,7 @@ import './App.css';
 import { STLViewer } from './STLViewer';
 
 function rsvp() {
-  window.open('https://makerprint.fillout.com/rsvp', '_blank');
+  window.open('https://makercreate.fillout.com/rsvp', '_blank');
 }
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
       <div className="topbar">
         <a href="https://hackclub.com" target="_blank" rel="noopener noreferrer"><img src="/flag-orpheus-left.svg" alt="HackClub logo" className="logo" /></a>
         <div className="navbar">  
-          <a className="navi" href="https://makerprint.fillout.com/rsvp" target="_blank" rel="noopener noreferrer">[R] RSVP</a>
+          <a className="navi" href="https://makercreate.fillout.com/rsvp" target="_blank" rel="noopener noreferrer">[R] RSVP</a>
           <a className="navi" href="https://hackclub.enterprise.slack.com/archives/C0AGB5HP066" target="_blank" rel="noopener noreferrer">[S] Slack</a>
           <a className="navi" href="https://github.com/vasipallie/makercreate" target="_blank" rel="noopener noreferrer">[G] GitHub</a>
           {/* <a className="navi" href="/console">[C] Console (WIP)</a> */}
