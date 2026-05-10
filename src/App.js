@@ -56,7 +56,7 @@ function App() {
 
       <hr></hr>
       <h2>What is MakerCreate?</h2>
-      <p>MakerCreate is a YSWS (You Ship, We Ship) program @ HackClub. You spend time designing CAD projects on an editor of your choice, and we ship you a 3D printer of your choice!</p>
+      <p>MakerCreate is a YSWS (You Ship, We Ship) program @ HackClub. You spend time making hardware/CAD projects on an approved editor, and we ship you a 3D printer of your choice! (You can also spend earned spools on our <bold>MakerShop&trade;</bold>)</p>
       
         {/* <svg width="30px" viewBox="0 0 12 10" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M1 0H7V1H1V0ZM1 6V1H0V9H1V10H11V9H12V3H11V2H8V1H7V2H8V3H11V4H3V5H2V6H1ZM1 7V9H11V5H3V6H2V7H1Z" fill="currentColor"></path>
@@ -76,7 +76,7 @@ function App() {
         <span>Project Guidelines:</span>
         <ul>
           <li>You MUST spend atleast 1 hour on your project.</li>
-          <li>You MUST use one of our approved CAD software.</li>
+          <li>You MUST use one of our approved CAD software/Hardware platforms.</li>
           <li>You MUST use our lapse-based journaling system.</li>
           <li>Upload your project files to printables.</li>
         </ul>
