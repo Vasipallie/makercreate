@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
 @font-face{
   font-family:'bms';
-  src: url('bms.ttf') format('truetype');
+  src: url('resources/bms.ttf') format('truetype');
 }
 .App-header {
   font-family: "Questrial", sans-serif;
@@ -91,7 +91,7 @@ a:hover{
 }
 .crt {
   position: relative;
-  overflow: hidden;
+  overflow: auto;
 }
 html,body{
   background-color: #0C0C0C;
@@ -175,6 +175,9 @@ html,body{
 .Viewer{
   flex: 1;
   min-height: 0;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at top, rgba(159, 255, 174, 0.16), transparent 55%), #0f1115;
 }
 
 .Viewer iframe{
@@ -188,6 +191,23 @@ html,body{
   width: 100% !important;
   height: 100% !important;
   display: block;
+}
+
+.Viewer-empty,
+.Viewer-error{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  text-align: center;
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
+  color: #dfffe5;
+  background: linear-gradient(180deg, rgba(12, 12, 12, 0.35), rgba(12, 12, 12, 0.72));
+}
+
+.Viewer-error{
+  color: #ffb4b4;
 }
 .estarimg{
   width:30vw;
