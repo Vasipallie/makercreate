@@ -46,10 +46,9 @@
   margin: 0.4rem 0 0;
   line-height: 1.3;
 }
-subtitle{
+.subtitle{
   display: block;
   font-size: clamp(1rem, 1.8vw, 1.35rem);
-  color: #9fffae;
   margin: 0.35rem 0 1rem;
   line-height: 1.4;
 }
@@ -66,6 +65,51 @@ subtitle{
   line-height: 1.65;
   max-width: 70ch;
 }
+
+.App-header p.windo {
+  font-size: 2.5rem;
+  line-height: 1.1;
+}
+
+.faq{
+  max-width: 900px;
+  margin: 1.25rem auto;
+}
+.faq-item{
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding: 0.25rem 0;
+}
+.faq-question{
+  width:100%;
+  text-align:left;
+  background:transparent;
+  border:none;
+  color:inherit;
+  padding:0.75rem 0;
+  font-weight:700;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+}
+.faq-question:focus{
+  outline: 2px solid rgba(0,255,150,0.12);
+  outline-offset: 4px;
+  border-radius:4px;
+}
+.faq-answer{ 
+  padding:0.25rem 0 1rem 0;
+  color: #dfe;
+}
+.faq-answer p{ 
+  margin:0;
+  line-height:1.6;
+}
+.faq-icon{
+  font-size:1.1rem;
+  margin-left:1rem;
+}
+
 .navi{
   background-color: #181818;
   color: #00FF00;
@@ -292,4 +336,16 @@ button{
   display:flex;
   width:100%;
   flex-direction:row;
+}
+.links{
+  color: #f0f0f0;
+  text-decoration: underline;
+}
+
+.faq{
+  background-color: #222222;
+  color: #00FF00;
+  padding: 0rem 1rem;
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  border-radius: 0.2rem;
 }

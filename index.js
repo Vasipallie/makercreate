@@ -15,10 +15,20 @@ app.use(express.static(path.join(__dirname, 'views')));
 
 app.set('view engine', 'ejs');
 
+
+
 app.get('/', (req, res) => {
     res.render('index');
 }
 );
+
+app.get('/dashboard', (req, res) => {
+
+});
+
+app.get('/console', (req, res) => {
+    res.render('console');
+});
 
 //START SERVER
 const PORT = 3000;
@@ -26,3 +36,10 @@ app.listen(PORT, ()=>{
     console.log(`Server is running on port ${PORT}`);
     console.log(`Visit http://localhost:${PORT}`);
 })
+
+
+/* 
+
+https://auth.hackclub.com/oauth/authorize?client_id=c64a336b6421768c772ca0b711d5e81e&redirect_uri=http://localhost:3000/authenticate&response_type=code&scope=email
+
+*/

@@ -22,13 +22,12 @@
           <a class="navi" href="https://makercreate.fillout.com/rsvp" target="_blank" rel="noopener noreferrer">[R] RSVP</a>
           <a class="navi" href="https://hackclub.enterprise.slack.com/archives/C0AGB5HP066" target="_blank" rel="noopener noreferrer">[S] Slack</a>
           <a class="navi" href="https://github.com/vasipallie/makercreate" target="_blank" rel="noopener noreferrer">[G] GitHub</a>
-          <!-- <a class="navi" href="/console">[C] Console (WIP)</a> -->
+          <a class="navi" href="/console">[C] Console (WIP)</a>
         </div>
       </div>
       <h1>MakerCreate.</h1>
       <p class="subtitle">A <label title="You Ship, We (will) Ship">YSWS</label> Program @ HackClub</p>
       <hr>
-
       <div class="modelholder">
         <div class="vmodels">
           <div class="vtitle"><span>PROJECT 1</span> <span class="vmodel-x">X</span></div>
@@ -53,17 +52,6 @@
       </div>
 
       <div style="text-align:center"><button id="rsvpBtn">RSVP for MakerCreate</button></div>
-
-      <!--
-      <div class="console">
-        <div class="console-title">Console (WIP)</div>
-        <div class="console-body">
-          <img src="/orpheus.png" width="60vw" alt="Orpheus" class="orpheus">
-          <p>Orpheus OS <br> Hackclub Systems Inc.</p>
-        </div>
-      </div>
-      -->
-
       <hr>
       <h2>What is MakerCreate?</h2>
       <p>MakerCreate is a YSWS (You Ship, We Ship) program @ HackClub. You spend time making hardware/CAD projects on an approved editor, and we ship you a 3D printer of your choice! (You can also spend earned logs on our <strong>MakerShop&trade;</strong>)</p>
@@ -76,7 +64,7 @@
             <li>You MUST be 13-18 years old.</li>
             <li>You CANNOT be banned from Hackatime.</li>
             <li>You MUST be part of HackClub Slack.</li>
-            <li>Your identity MUST be verified via <a href="https://auth.hackclub.com" target="_blank" rel="noopener noreferrer">HackClub Auth</a></li>
+            <li>Your identity MUST be verified via <a href="https://auth.hackclub.com" class="links"  target="_blank" rel="noopener noreferrer">HackClub Auth</a></li>
           </ul>
         </div>
         <div class="rules">
@@ -89,8 +77,45 @@
           </ul>
         </div>
       </div>
-    </div>
+      <h2 style="text-align: center;">Frequently Asked Questions</h2>
 
+      <div class="faq" id="faq">
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-title">What is MakerCreate?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer" hidden>
+            <p>MakerCreate is a YSWS (You Ship, We Ship) program @ HackClub. You spend time making hardware/CAD projects on an approved editor, and we ship you a 3D printer of your choice! (You can also spend earned logs on our <strong>MakerShop&trade;</strong>)</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-title">Is MakerCreate Free?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer" hidden>
+            <p>Absolutely! MakerCreate is a completely free program run by volunteers at HackClub. MakerCreate is a YSWS program funded by HackClub, a US-based 501(c)(3) nonprofit that helps teens get involved with technology.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-title">How do I sign up for MakerCreate?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer" hidden>
+            <p>You can sign up for MakerCreate by filling out our RSVP form, which can be found on the top right of this page, or by clicking <a href="https://makercreate.fillout.com/rsvp" class="links" target="_blank" rel="noopener noreferrer">here</a>.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <footer>
+      <hr>
+
+    </footer>
     <script type="module">
       import * as THREE from 'three';
       import { STLLoader } from 'three/addons/loaders/STLLoader.js';
@@ -209,5 +234,21 @@
 
       document.querySelectorAll('.Viewer[data-url]').forEach(createViewer);
     </script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          document.querySelectorAll('.faq-question').forEach(function(btn){
+            btn.addEventListener('click', function(){
+              const expanded = btn.getAttribute('aria-expanded') === 'true';
+              btn.setAttribute('aria-expanded', String(!expanded));
+              const answer = btn.nextElementSibling;
+              if(answer){
+                answer.hidden = expanded;
+              }
+              const icon = btn.querySelector('.faq-icon');
+              if(icon) icon.textContent = expanded ? '+' : '−';
+            });
+          });
+        });
+      </script>
   </body>
 </html>
