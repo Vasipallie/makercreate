@@ -6,19 +6,28 @@
     <title>MakerCreate - TermiUX</title>
     <link rel="stylesheet" href="css/dashboard.css">
   </head>
-  <body id="Eyp" class="App App-header crt">
+  <body class="App App-header crt">
     <div class="nav">
       <div class="logostuff">
-        <img alt="MakerCreate Logo" src="/resources/logo.png" class="logo">
+        <img alt="MakerCreate Logo" src="resources/logo.png" class="logo">
         <hr>
       </div>
       <a class="navbtn" href="/dashboard">Dashboard</a>
       <a class="navbtn" href="/makershop">MakerShop&trade;</a>
       <a class="navbtn" href="/leaderboard">Leaderboard</a>
       <a class="navbtn" href="/profile">Profile</a>
-    </div>
-    <div class="content">
+      <div class="currencyvalue">
+        <img src="resources/log.png" alt="" class="logimg">
+        <div class="texthold">
+          <p>balance</p>
+          <span class="logvalue"><%= locals.logs || 0 %> logs</span>
+        </div>
+      </div>
+      </div>
 
+    <div class="content">
+      <h1>./MakerCreate Console</h1>
     </div>
+
   </body>
 </html>
