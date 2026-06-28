@@ -116,12 +116,13 @@ html, body {
   flex-direction:column;
   box-sizing:border-box;
   gap:0.2em;
+  padding:0.2em;
 }
 .navitem{
   text-decoration:none;
   color:#ffffff;
   padding-block:0.1em;
-  margin-inline:0.1em;
+  padding-inline:0.4em;
   background-color:#00BC66;
   border-radius:0.2em;
   width:100%;
