@@ -112,6 +112,7 @@ html, body {
 }
 .dashies{
   width:100%;
+  height:100%;
   display:flex;
   flex-direction:column;
   box-sizing:border-box;
@@ -123,9 +124,9 @@ html, body {
   color:#ffffff;
   padding-block:0em;
   padding-inline:0.4em;
-  background-color:#00BC66;
-  border-radius:0.2em;
+  background-color:#050607;
   width:100%;
+  border: 1px solid #3b3e44;
   box-sizing:border-box;
 }
 .navitem:hover{
@@ -153,4 +154,73 @@ hr {
 }
 .content{
   padding: 0.3em;
+}
+.profiledata {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0.55em 0.6em 0.6em;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #0a0c0a;
+  border-top: 1px solid #3b4238;
+}
+.currency {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.25em 0.1em;
+}
+
+.logimg {
+  width: 1.5em;
+  height: 1.5em;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+.logcount {
+  font-size: 1em;
+  color: #7ec97e;
+  letter-spacing: 0.04em;
+  font-family: 'Questrial', monospace;
+}
+.profi {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5em;
+  width: 100%;
+  padding: 0.15em 0.1em 0;
+  box-sizing: border-box;
+}
+.profileimg {
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid #3b4238;
+}
+.profilt {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.pint {
+  font-size: 0.55em;
+  line-height: 1.2;
+  margin: 0;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+}
+.pnam {
+  font-size: 0.85em;
+  line-height: 1.1;
+  margin: 0;
+  color: #D9D5C8;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

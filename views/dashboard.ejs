@@ -17,6 +17,20 @@
         <a class="navitem" href="/leaderboard"># leaderboard</a>
         <a class="navitem" href="/profile"># profile</a>
       </div>
+      <div class="profiledata">
+        <div class="currency">
+          <img src="resources/log.png" alt="" class="logimg">
+          <span class="logcount"><%= locals.log || 0 %> logs</span>
+        </div>
+        <hr>
+        <div class="profi">
+          <img src="resources/pfp.jpg" alt="" class="profileimg">
+          <div class="profilt">
+            <p class="pint">logged in as</p>
+            <p class="pnam"><%= locals.name || "undefined" %></p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="content">
