@@ -8,13 +8,14 @@ dotenv.config();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 import path from 'path';
 
+
+
 const app = express();
 app.use(cookieParser());
 app.use('/models', express.static(path.join(__dirname, 'views', 'resources', 'models')));
 app.use('/three', express.static(path.join(__dirname, 'node_modules', 'three')));
 app.use(express.static(path.join(__dirname, 'views')));
 app.set('view engine', 'ejs');
-
 
 // Declaring imporantant variables for auth and sesh mgmt
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,14 @@ const sessionCookieMaxAge = 1000 * 60 * 60 * 24 * 30;
 const isProduction = true;
 const RedirectUri = process.env.HACKCLUB_AUTH_REDIRECT_URI || `http://localhost:${PORT}/authenticate`;
 const authSessions = new Map();
+
+//SLACK STUFF
+import { WebClient } from "@slack/web-api";
+const client = new WebClient(process.env.SlackBT);
+export async function getPfp(slackID) {
+    const { user } = await client.users.info({ user: slackID });
+    return user.profile.image_512;
+}
 
 function setSessionCookie(res, sessionId) {
     res.cookie(sessionCookieName, sessionId, {
@@ -68,7 +77,7 @@ function getSession(req) {
     return authSessions.get(sessionId) || null;
 }
 
-app.get('/dashboard', (req, res) => {
+app.get('/dashboard', async (req, res) => {
     const session = getSession(req);
     if (!session) {
         return res.redirect('/login');
@@ -77,11 +86,13 @@ app.get('/dashboard', (req, res) => {
     if (identity.verification_status === 'ineligible') {
         return res.redirect('/error/You are not eligible to use the MakerCreate Console.');
     }
+    const url = await getPfp(identity.slack_id);
     res.render('dashboard', {
         name: identity.first_name || 'UnRetrievable',
         email: identity.primary_email || 'UnRetrievable',
         slackId: identity.slack_id || 'UnRetrievable',
         verificationStatus: identity.verification_status || 'UnRetrievable',
+        pfp: url
 
     });
 });
@@ -98,6 +109,7 @@ app.get('/login', (req,res) => {
     authUrl.searchParams.set('response_type', 'code');
     authUrl.searchParams.set('scope', HCAScope);
     res.redirect(authUrl.toString());
+
 });
 
 //Exchange Code for Token system via HCA
@@ -133,7 +145,6 @@ async function fetchIdenti(accessToken) {
     const payload = await response.json();
     if (!response.ok) {
         const message = payload?.error?.message || payload?.message || 'Unable to fetch Hack Club identity.';
-        res.redirect(`/error/${message}`);
         throw new Error(message);
     }
     return payload
@@ -191,11 +202,3 @@ app.listen(PORT, ()=>{
     console.log(`Server is running on port ${PORT}`);
     console.log(`Visit http://localhost:${PORT}`);
 })
-
-
-
-/* 
-
-https://auth.hackclub.com/oauth/authorize?client_id=c64a336b6421768c772ca0b711d5e81e&redirect_uri=http://localhost:3000/authenticate&response_type=code&scope=email
-
-*/

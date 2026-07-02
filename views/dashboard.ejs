@@ -25,7 +25,7 @@
         </div>
         <hr>
         <div class="profi">
-          <img src="resources/pfp.jpg" alt="" class="profileimg">
+          <img src="<%= locals.pfp || 'resources/pfp.jpg' %>" alt="pfp" class="profileimg">
           <div class="profilt">
             <p class="pint">logged in as</p>
             <p class="pnam"><%= locals.name || "undefined" %></p>
