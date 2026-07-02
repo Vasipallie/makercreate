@@ -31,7 +31,7 @@ const authSessions = new Map();
 //SLACK STUFF
 import { WebClient } from "@slack/web-api";
 const client = new WebClient(process.env.SlackBT);
-export async function getPfp(slackID) {
+async function getPfp(slackID) {
     const { user } = await client.users.info({ user: slackID });
     return user.profile.image_512;
 }
@@ -197,13 +197,8 @@ app.get('/error/:msg', (req, res) => {
 app.get('/:404', (req, res) => {
     res.redirect('/error/Error 404, Page Not Found');
 });
-
-export default app;
-
-// Start server if not vercel?
-if (process.env.VERCEL !== '1') {
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-        console.log(`Visit http://localhost:${PORT}`);
-    });
-}
+//START SERVER
+app.listen(PORT, ()=>{
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`Visit http://localhost:${PORT}`);
+})
