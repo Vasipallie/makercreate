@@ -197,8 +197,13 @@ app.get('/error/:msg', (req, res) => {
 app.get('/:404', (req, res) => {
     res.redirect('/error/Error 404, Page Not Found');
 });
-//START SERVER
-app.listen(PORT, ()=>{
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`Visit http://localhost:${PORT}`);
-})
+
+export default app;
+
+// Start server if not vercel?
+if (process.env.VERCEL !== '1') {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+        console.log(`Visit http://localhost:${PORT}`);
+    });
+}
