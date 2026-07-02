@@ -11,10 +11,11 @@
     import path from 'path';
 
 //AIRTABLE INIT
-    const rsvp = new Airtable({
-    apiKey: process.env.AirTableAPIK,
-    }).base(process.env.AirTableBID);
-
+Airtable.configure({
+    endpointUrl: 'https://api.airtable.com',
+    apiKey: process.env.AirTableAPIK
+});
+const base = Airtable.base(process.env.AirTableBID);
 //MIDDLEWARE
     const app = express();
     app.use(cookieParser());
@@ -24,7 +25,7 @@
     app.set('view engine', 'ejs');
 
     //MIDDLEWARE f(x)
-    //sanitise error/:id stuff as its being shown on screen and can be used for XSS attacks 
+    //sanitise error/:id stuff as its being shown on screen and can be used for XSS attacks
     function disinfect(string) {
     const map = {
         '&': '&amp;',
@@ -83,7 +84,37 @@
         }
         return num;
     }
+    async function dashauth(req, res) {
+        const session = getSession(req);
+        if (!session) {
+            res.redirect('/login');
+            return null;
+        }
+        const identity = session.identity?.identity || {};
+        if (identity.verification_status === 'ineligible') {
+            res.redirect('/error/You are not eligible to use the MakerCreate Console.');
+            return null;
+        }
+        let url = 'resources/pfp.jpg';
+        if (identity.slack_id) {
+            try {
+                url = await getPfp(identity.slack_id);
+            } catch {
+                url = 'resources/pfp.jpg';
+            }
+        }
 
+        const logs = countfx(0); // From Airtable once i get it working :(
+
+        return {
+            fname: identity.first_name || 'UnRetrievable',
+            email: identity.primary_email || 'UnRetrievable',
+            slackId: identity.slack_id || 'UnRetrievable',
+            verif: identity.verification_status || 'UnRetrievable',
+            pfp: url,
+            log: logs
+        }
+    }
 // Declaring imporantant variables for auth and sesh mgmt
     const PORT = process.env.PORT || 3000;
     const HCA_CID = process.env.HCA_CID;
@@ -91,7 +122,7 @@
     const HCAScope = 'email name verification_status slack_id';
     const sessionCookieName = 'makercreate_session';
     const sessionCookieMaxAge = 1000 * 60 * 60 * 24 * 30;
-    const isProduction = true;
+    const isProduction = process.env.NODE_ENV === 'production';
     const RedirectUri = process.env.HACKCLUB_AUTH_REDIRECT_URI || `http://localhost:${PORT}/authenticate`;
     const authSessions = new Map();
 
@@ -127,58 +158,57 @@
         }
         return authSessions.get(sessionId) || null;
     }
+    async function rsvpdbs(identity) {
+        const info = identity?.identity || {};
+        const fname = info.first_name || 'UnRetrievable';
+        const email = info.primary_email || 'UnRetrievable';
+        const slackId = info.slack_id || 'UnRetrievable';
+
+        if (email === 'UnRetrievable') {
+            return;
+        }
+        try {
+            const existing = await base('RSVPs')
+                .select({
+                    filterByFormula: `{Email} = "${email.replace(/"/g, '\\"')}"`,
+                    maxRecords: 1
+                })
+                .firstPage();
+
+            if (existing.length > 0) {
+                return;
+            }
+            const records = await base('RSVPs').create([
+                {
+                    fields: {
+                        Name: fname,
+                        Email: email,
+                        SlackID: slackId
+                    }
+                }
+            ]);
+            records.forEach((record) => {
+                console.log('Created RSVP record:', record.getId());
+            });
+        } catch (err) {
+            console.error('Airtable RSVP error:', err.message, err.statusCode ?? '');
+        }
+    }
 
 // APP ROUTES
-    app.get('/', (req, res) => {
-        res.render('index');
-    }
-    );
-    app.get('/dashboard', async (req, res) => {
-        const session = getSession(req);
-        if (!session) {
-            return res.redirect('/login');
-        }
-        const identity = session.identity?.identity || {};
-        if (identity.verification_status === 'ineligible') {
-            return res.redirect('/error/You are not eligible to use the MakerCreate Console.');
-        }
-        console.log(identity)
-        const url = await getPfp(identity.slack_id);
-
-        const logs = countfx(0); // From Airtable once i get it working :(
-        res.render('dashboard', {
-            name: identity.first_name || 'UnRetrievable',
-            email: identity.primary_email || 'UnRetrievable',
-            slackId: identity.slack_id || 'UnRetrievable',
-            verificationStatus: identity.verification_status || 'UnRetrievable',
-            pfp: url,
-            log: logs
-
-        });
-    });
-    app.get('/login', (req,res) => {
-        const authUrl = new URL('https://auth.hackclub.com/oauth/authorize');
-        authUrl.searchParams.set('client_id', HCA_CID);
-        authUrl.searchParams.set('redirect_uri', RedirectUri);
-        authUrl.searchParams.set('response_type', 'code');
-        authUrl.searchParams.set('scope', HCAScope);
-        res.redirect(authUrl.toString());
-
-    });
-
     app.get('/authenticate', async (req, res) => {
         const {error, code} = req.query;
         if (error) {
-            return res.redirect(`/error/${error}`);
+            return res.redirect(`/error/Other Auth ERR:${error}`);
         }
         if (!code) {
             return res.redirect('/error/Auth Code not provided');
         }
-        
+
         if (typeof code !== 'string') {
             return res.redirect('/login');
         }
-        if (!HCA_CID && !HCA_SID) {
+        if (!HCA_CID || !HCA_SID) {
             return res.redirect('/error/Missing authentication credentials');
         }
         try {
@@ -191,32 +221,90 @@
                 createdAt: Date.now(),
             });
             setSessionCookie(res, sessionId);
+            console.log(
+                identity.identity?.primary_email,
+                identity.identity?.first_name,
+                identity.identity?.last_name,
+                identity.identity?.slack_id
+            );
+            await rsvpdbs(identity);
             return res.redirect('/dashboard');
 
         }catch (error){
-            return res.redirect(`/error/${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            return res.redirect(`/error/Auth Error:${message}`);
         }
     });
+    app.get('/', (req, res) => {
+        res.render('index');
+    }
+    );
+    app.get('/dashboard', async (req, res) => {
+        const data = await dashauth(req, res);
+        if (!data) {
+            return;
+        }
+        res.render('dashboard', {
+            name: data.fname,
+            email: data.email,
+            slackId: data.slackId,
+            verificationStatus: data.verif,
+            pfp: data.pfp,
+            log: data.log
 
+        });
+    });
+    app.get('/profile', async (req, res) => {
+        const data = await dashauth(req, res);
+        if (!data) {
+            return;
+        }
+        res.render('profile', {
+            name: data.fname,
+            email: data.email,
+            slackId: data.slackId,
+            verificationStatus: data.verif,
+            pfp: data.pfp,
+            log: data.log
+        });
+    });
+    app.get('/login', (req,res) => {
+        const authUrl = new URL('https://auth.hackclub.com/oauth/authorize');
+        authUrl.searchParams.set('client_id', HCA_CID);
+        authUrl.searchParams.set('redirect_uri', RedirectUri);
+        authUrl.searchParams.set('response_type', 'code');
+        authUrl.searchParams.set('scope', HCAScope);
+        res.redirect(authUrl.toString());
+
+    });
     app.get('/logout', (req,res) => {
-        const sessionId = req.cookies.sessionId;
+        const sessionId = req.cookies[sessionCookieName];
         if (sessionId) {
             authSessions.delete(sessionId);
-            res.clearCookie('sessionId');
+            clearSessionCookie(res);
         }
         res.redirect('/');
     });
-
     app.get('/error/:msg', (req, res) => {
         res.render('err', { message: disinfect(req.params.msg) });
     });
-    app.get('/:404', (req, res) => {
+    app.get('/hackatime', (req, res) => {
+        // REMINDER FOR FUTURE ME, ADD HACKATIME LATER
+        res.redirect('/profile')
+    });
+    app.get('*', (req, res) => {
         res.redirect('/error/Error 404, Page Not Found');
     });
 
-
 //START SERVER
-app.listen(PORT, ()=>{
+const server = app.listen(PORT, ()=>{
     console.log(`Server is running on port ${PORT}`);
     console.log(`Visit http://localhost:${PORT}`);
-})
+});
+
+process.on('SIGINT', () => {
+    server.close(() => process.exit(0));
+});
+process.on('SIGTERM', () => {
+    server.close(() => process.exit(0));
+});
