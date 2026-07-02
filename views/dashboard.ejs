@@ -16,7 +16,6 @@
         <a class="navitem" href="/makershop"># makershop™</a>
         <a class="navitem" href="/leaderboard"># leaderboard</a>
         <a class="navitem" href="/profile"># profile</a>
-        <a class="navitem" href="/logout"># logout</a>
       </div>
       <div class="profiledata">
         <div class="currency">
@@ -27,8 +26,8 @@
         <div class="profi">
           <img src="<%= locals.pfp || 'resources/pfp.jpg' %>" alt="pfp" class="profileimg">
           <div class="profilt">
-            <p class="pint">logged in as</p>
-            <p class="pnam"><%= locals.name || "undefined" %></p>
+            <span class="pint">Welcome back!</span>
+            <span class="pnam"><%= locals.name || "undefined" %></span>
           </div>
         </div>
       </div>

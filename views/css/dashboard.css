@@ -169,7 +169,7 @@ hr {
   display: flex;
   align-items: center;
   gap: 0.4em;
-  padding: 0.25em 0.1em;
+  padding: 0em 0.1em;
 }
 
 .logimg {
@@ -194,8 +194,8 @@ hr {
   box-sizing: border-box;
 }
 .profileimg {
-  width: 2em;
-  height: 2em;
+  width: 2.2em;
+  height: 2.2em;
   border-radius: 50%;
   flex-shrink: 0;
   border: 1px solid #3b4238;
@@ -205,18 +205,18 @@ hr {
   flex-direction: column;
   gap: 0;
   min-width: 0;
+  padding-block:auto;
 }
 
 .pint {
-  font-size: 0.55em;
-  line-height: 1.2;
+  font-size: 0.7em;
+  line-height: 1;
   margin: 0;
   letter-spacing: 0.06em;
-  text-transform: lowercase;
 }
 .pnam {
-  font-size: 0.85em;
-  line-height: 1.1;
+  font-size: 1.1em;
+  line-height: 1;
   margin: 0;
   color: #D9D5C8;
   letter-spacing: 0.02em;
