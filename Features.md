@@ -21,8 +21,8 @@ Internal Systems
 Backend System:
 AutoRSVP System
 Flow
-HCA Auth
-Add to RSVP db (airtable)
+~HCA Auth
+~Add to RSVP db (airtable)
 Proceed to onboard
 Onboarding System
 Welcome user

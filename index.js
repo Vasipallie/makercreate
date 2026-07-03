@@ -87,7 +87,7 @@ const base = Airtable.base(process.env.AirTableBID);
     async function dashauth(req, res) {
         const session = getSession(req);
         if (!session) {
-            res.redirect('/login');
+            res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);
             return null;
         }
         const identity = session.identity?.identity || {};
@@ -108,6 +108,7 @@ const base = Airtable.base(process.env.AirTableBID);
 
         return {
             fname: identity.first_name || 'UnRetrievable',
+            lname: identity.last_name || 'UnRetrievable',
             email: identity.primary_email || 'UnRetrievable',
             slackId: identity.slack_id || 'UnRetrievable',
             verif: identity.verification_status || 'UnRetrievable',
@@ -197,7 +198,7 @@ const base = Airtable.base(process.env.AirTableBID);
 
 // APP ROUTES
     app.get('/authenticate', async (req, res) => {
-        const {error, code} = req.query;
+        const {error, code, state} = req.query;
         if (error) {
             return res.redirect(`/error/Other Auth ERR:${error}`);
         }
@@ -228,7 +229,8 @@ const base = Airtable.base(process.env.AirTableBID);
                 identity.identity?.slack_id
             );
             await rsvpdbs(identity);
-            return res.redirect('/dashboard');
+            const nextPage = typeof state === 'string' && state.startsWith('/') ? state : '/dashboard';
+            return res.redirect(nextPage);
 
         }catch (error){
             const message = error instanceof Error ? error.message : String(error);
@@ -254,26 +256,32 @@ const base = Airtable.base(process.env.AirTableBID);
 
         });
     });
-    app.get('/profile', async (req, res) => {
+    app.get('/settings', async (req, res) => {
         const data = await dashauth(req, res);
         if (!data) {
             return;
         }
-        res.render('profile', {
+        res.render('settings', {
             name: data.fname,
+            lname: data.lname,
             email: data.email,
             slackId: data.slackId,
             verificationStatus: data.verif,
             pfp: data.pfp,
+            ysws: data.verif,
             log: data.log
         });
     });
     app.get('/login', (req,res) => {
+        const nextPage = typeof req.query.next === 'string' && req.query.next.startsWith('/')
+            ? req.query.next
+            : '/dashboard';
         const authUrl = new URL('https://auth.hackclub.com/oauth/authorize');
         authUrl.searchParams.set('client_id', HCA_CID);
         authUrl.searchParams.set('redirect_uri', RedirectUri);
         authUrl.searchParams.set('response_type', 'code');
         authUrl.searchParams.set('scope', HCAScope);
+        authUrl.searchParams.set('state', nextPage);
         res.redirect(authUrl.toString());
 
     });

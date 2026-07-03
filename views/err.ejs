@@ -85,6 +85,22 @@
   width: 10em;
   height: auto;
 }
+button{
+  text-decoration: none;
+  border:none;
+  background-color: #1f1f1f;
+  color: #D9D5C8;
+  padding:0.5em 0.8em;
+  font-family: "Questrial", sans-serif;
+  font-size: 0.8em;
+  border:1px #3f3f3f solid;
+  Cursor: pointer;
+  width:fit-content;  
+}
+button:hover{
+  background-color: #001d01;
+  color: #bce0bc;
+}
 
 
     </style>
@@ -94,5 +110,11 @@
     <h1>./Error</h1>
     <p>Orphy detected an error at this location.</p>
     <p>Details: <%= locals.message || "unknown error" %> </p>
+    <button onclick="back()">Return to last page</button>
   </body>
+  <script>
+    function back(){
+      window.history.back();
+    }
+  </script>
 </html>

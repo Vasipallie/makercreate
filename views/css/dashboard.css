@@ -224,3 +224,26 @@ hr {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.abtn{
+  text-decoration:none;
+  color:#ffffff;
+  padding-block:0.25em;
+  padding-inline:0.5em;
+  background-color:#193f0c;
+}
+.abtn:hover{
+  color:#00ff00;
+  background-color:#3e4e07;
+  
+}
+.logout{
+  text-decoration:none;
+  color:#ffffff;
+  padding-block:0.25em;
+  padding-inline:0.5em;
+  background-color:#3e0707;
+}
+.logout:hover{
+  color:#ff0000;
+  background-color:#6b0b0b;
+}
