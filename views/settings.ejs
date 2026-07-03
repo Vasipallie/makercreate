@@ -1,34 +1,84 @@
 <%- include('partials/head', { title: 'Dashboard', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
 
-      <h1>./MakerCreate Settings</h1>
-      <span>This is your settings page, <%= locals.name || "" %></span>
-      <style>
-      .aboutme{
-        margin-block: 1em;
-        padding: 1em;
-        border: 1px solid #D9D5C8;
-        border-radius: 0.5em;
-      }
-      h2{
-        margin:0;
-        line-height:0.8;
+<style>
+  .settings-header span {
+    color: #8a8578;
+    font-size: 0.95em;
+  }
+  .aboutme {
+    margin-block: 1em;
+    padding: 0.5em;
+    border: 1px solid #c8d9ce;
+    border-radius: 0.1em;
+  }
+  .aboutme h2 {
+    margin: 0;
+    line-height: 1;
+  }
+  .aboutme .subtitle {
+    display: block;
+    color: #8a8578;
+    font-size: 0.9em;
+    margin-bottom: 0em;
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    row-gap: 0.4em;
+    column-gap: 1em;
+    margin-bottom: 1em;
+  }
+  .info-grid .label {
+    color: #8a8578;
+    font-size: 0.9em;
+  }
+  .info-grid .value {
+    font-weight: 500;
+  }
+  .btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6em;
+  }
 
-      }
-    </style>
-      <div class="aboutme">
-        <h2>About me</h2>
-        <span class="subtitle">This is information about you.</span>
-        <p> Name: <%= locals.name || "undefined" %> <%= locals.lname || "" %></p>
-        <p> YSWS Eligibility: <%= locals.ysws || "Unretrievable" %></p>
-        <p> Email: <%= locals.email || "Unretrievable" %></p>
-        <p> Slack ID: <%= locals.slackId || "Unretrievable" %></p>
-        <a href="https://auth.hackclub.com/identity/edit" class="abtn">Edit Profile on HCAuth</a>
-      </div>
-      <div class="aboutme">
-        <h2>HackClub Policies</h2>
-        <span class="subtitle">Review our community guidelines and policies.</span>
-        <a href="https://hackclub.com/privacy-and-terms" class="abtn">Privacy Policy</a>
-        <a href="https://hackclub.com/conduct" class="abtn">Code of Conduct</a>
-      </div>
-        <a href="/logout" class="logout">Logout of MakerCreate</a>
+  .logout {
+    display: inline-block;
+    margin-top: 0.5em;
+  }
+</style>
+
+<div class="settings-header">
+  <h1>./MakerCreate Settings</h1>
+  <span>This is your settings page, <%= locals.name || "" %></span>
+</div>
+
+<div class="aboutme">
+  <h2>About me</h2>
+  <div class="info-grid">
+    <span class="label">Name</span>
+    <span class="value"><%= locals.name || "undefined" %> <%= locals.lname || "" %></span>
+    <span class="label">YSWS Eligibility</span>
+    <span class="value"><%= locals.ysws || "Unretrievable" %></span>
+    <span class="label">Email</span>
+    <span class="value"><%= locals.email || "Unretrievable" %></span>
+    <span class="label">Slack ID</span>
+    <span class="value"><%= locals.slackId || "Unretrievable" %></span>
+  </div>
+
+  <div class="btn-row">
+    <a href="https://auth.hackclub.com/identity/edit" class="abtn">Edit Profile on HCAuth</a>
+  </div>
+</div>
+
+<div class="aboutme">
+  <h2>HackClub Policies</h2>
+  <span class="subtitle">Review our community guidelines and policies.</span>
+  <div class="btn-row">
+    <a href="https://hackclub.com/privacy-and-terms" class="abtn">Privacy Policy</a>
+    <a href="https://hackclub.com/conduct" class="abtn">Code of Conduct</a>
+  </div>
+</div>
+
+<a href="/logout" class="logout abtn">Logout of MakerCreate</a>
+
 <%- include('partials/foot') %>
