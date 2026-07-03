@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MakerCreate - TermiUX</title>
     <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+      .aboutme{
+        margin-block: 1em;
+        padding: 1em;
+        border: 1px solid #D9D5C8;
+        border-radius: 0.5em;
+      }
+      h2{
+        margin:0;
+        line-height:0.8;
+
+      }
+    </style>
   </head>
   <body class="App App-header crt">
     <div class="nav">
@@ -37,7 +50,7 @@
       <h1>./MakerCreate Settings</h1>
       <span>This is your settings page, <%= locals.name || "" %></span>
 
-      <div class="">
+      <div class="aboutme">
         <h2>About me</h2>
         <span class="subtitle">This is information about you.</span>
         <p> Name: <%= locals.name || "undefined" %> <%= locals.lname || "" %></p>
@@ -46,8 +59,13 @@
         <p> Slack ID: <%= locals.slackId || "Unretrievable" %></p>
         <a href="https://auth.hackclub.com/identity/edit" class="abtn">Edit Profile on HCAuth</a>
       </div>
-
-      <a href="/logout" class="logout">Logout</a>
+      <div class="aboutme">
+        <h2>HackClub Policies</h2>
+        <span class="subtitle">Review our community guidelines and policies.</span>
+        <a href="https://hackclub.com/privacy-and-terms" class="abtn">Privacy Policy</a>
+        <a href="https://hackclub.com/conduct" class="abtn">Code of Conduct</a>
+      </div>
+        <a href="/logout" class="logout">Logout of MakerCreate</a>
     </div>
     <script src="/js/clicks.js"></script>
   </body>
