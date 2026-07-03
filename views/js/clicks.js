@@ -13,3 +13,4 @@ document.addEventListener("click", () => {
     audio.play().catch(() => {});
     i = (i + 1) % PS;
 });
+

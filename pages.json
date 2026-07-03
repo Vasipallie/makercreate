@@ -1,0 +1,20 @@
+{
+    "pages": [
+        {
+            "name": "dashboard",
+            "path": "/dashboard"
+        },
+        {
+            "name": "makershop™",
+            "path": "/makershop"
+        },
+        {
+            "name":"makercreate-slack",
+            "path":"https://hackclub.enterprise.slack.com/archives/C0AGB5HP066"
+        },
+        {
+            "name":"settings",
+            "path":"/settings"
+        }
+    ]
+}
