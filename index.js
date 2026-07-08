@@ -75,6 +75,31 @@ const base = Airtable.base(process.env.AirTableBID);
         }
         return payload
     }
+    async function xchangecode(code) {
+        const tokenBody = new URLSearchParams({
+            client_id: HaktimeUID,
+            code,
+            redirect_uri: HackatimeRedirectUri,
+            grant_type: 'authorization_code',
+        });
+        if (HaktimeAPIK) {
+            tokenBody.set('client_secret', HaktimeAPIK);
+        }
+        const response = await fetch('https://hackatime.hackclub.com/oauth/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: tokenBody,
+        });
+        const payload = await response.json();
+
+        if (!response.ok) {
+            const message = payload?.error_description || payload?.error || 'Hackatime token exchange failed';
+            throw new Error(message);
+        }
+        return payload;
+    }
     //Convert humongously large log counts to a readable format like roadblocks (:P)
     function countfx(num){
         if (num >= 1000000){
@@ -116,11 +141,25 @@ const base = Airtable.base(process.env.AirTableBID);
             log: logs
         }
     }
-    function hkcookiechk(req){
-        const hklinked =req.cookies['hklinked'];
-        if (hklinked === 'true'){
-            return true;
-        } else {
+    async function hkcookiechk(slackid){
+        if (!slackid){
+            return false;
+        }
+        try {
+            const existing = await base('Users').select({
+                filterByFormula: `{SlackId} = "${slackid}"`,
+                maxRecords: 1
+            })
+            .firstPage();
+            if (existing.length > 0) {
+                const record = existing[0];
+                const stoken = record.get('HackatimeToken');
+                return !!stoken;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.error('Airtable Hackatime error:', err.message, err.statusCode ?? '');
             return false;
         }
     }
@@ -135,7 +174,7 @@ const base = Airtable.base(process.env.AirTableBID);
     const sessionCookieMaxAge = 1000 * 60 * 60 * 24 * 30;
     const isProduction = process.env.NODE_ENV === 'production';
     const RedirectUri = process.env.HACKCLUB_AUTH_REDIRECT_URI || `http://localhost:${PORT}/authenticate`;
-    const HkRedirectUri = process.env.HAKTIME_AUTH_REDIRECT_URI || `http://localhost:${PORT}/hackatime`;
+    const HackatimeRedirectUri = process.env.HAKTIME_AUTH_REDIRECT_URI || process.env.HAKTIME_AUTH_TREDICT_URI || `http://localhost:${PORT}/hackatime`;
     const authSessions = new Map();
 
 //SLACK INIT
@@ -176,13 +215,13 @@ const base = Airtable.base(process.env.AirTableBID);
         const email = info.primary_email || 'UnRetrievable';
         const slackId = info.slack_id || 'UnRetrievable';
 
-        if (email === 'UnRetrievable') {
+        if (email === 'UnRetrievable' || slackId === 'UnRetrievable' || fname === 'UnRetrievable' ) {
             return;
         }
         try {
             const existing = await base('RSVPs')
                 .select({
-                    filterByFormula: `{Email} = "${email.replace(/"/g, '\\"')}"`,
+                    filterByFormula: `{SlackId} = "${slackId}"`,
                     maxRecords: 1
                 })
                 .firstPage();
@@ -204,6 +243,34 @@ const base = Airtable.base(process.env.AirTableBID);
             });
         } catch (err) {
             console.error('Airtable RSVP error:', err.message, err.statusCode ?? '');
+        }
+    }
+    async function userdbs(identity){
+        const info = identity?.identity || {};
+        const fname = info.first_name || 'UnRetrievable';
+        const email = info.primary_email || 'UnRetrievable';
+        const slackId = info.slack_id || 'UnRetrievable';
+        if (email === 'UnRetrievable' || slackId === 'UnRetrievable' || fname === 'UnRetrievable' ) {
+            return false;
+        }
+        try {
+            const existing = await base('Users').select({
+                filterByFormula: `{SlackId} = "${slackId}"`,
+                maxRecords: 1
+            }).firstPage();
+            if (existing.length > 0) {
+                return true;
+            }
+            await base('Users').create({
+                SlackId: slackId,
+                Name: fname,
+                Email: email
+            });
+            return true;
+
+        } catch (err) {
+            console.error('Airtable Users error:', err.message, err.statusCode ?? '');
+            throw err;
         }
     }
 
@@ -240,6 +307,10 @@ const base = Airtable.base(process.env.AirTableBID);
                 identity.identity?.slack_id
             );
             await rsvpdbs(identity);
+            const userCreated = await userdbs(identity);
+            if (!userCreated) {
+                return res.redirect('/error/Unable to register user in database');
+            }
             const nextPage = typeof state === 'string' && state.startsWith('/') ? state : '/dashboard';
             return res.redirect(nextPage);
 
@@ -257,6 +328,8 @@ const base = Airtable.base(process.env.AirTableBID);
         if (!data) {
             return;
         }
+        const linked = await hkcookiechk(data.slackId);
+
         res.render('dashboard', {
             name: data.fname,
             email: data.email,
@@ -264,24 +337,23 @@ const base = Airtable.base(process.env.AirTableBID);
             verificationStatus: data.verif,
             pfp: data.pfp,
             log: data.log,
-            linked: hkcookiechk(req)
-
+            linked
 
         });
     });
     app.get('/makershop', async (req, res)=>{
         res.render('makershop', {linked: false});
     })
-
     app.get('/hackatimeauth', async (req,res)=>{
         const nextPage = typeof req.query.next === 'string' && req.query.next.startsWith('/')
             ? req.query.next
             : '/dashboard';
         const authUrl = new URL('https://hackatime.hackclub.com/oauth/authorize');
         authUrl.searchParams.set('client_id', HaktimeUID);
-        authUrl.searchParams.set('redirect_uri', HkRedirectUri);
+        authUrl.searchParams.set('redirect_uri', HackatimeRedirectUri);
         authUrl.searchParams.set('response_type', 'code');
         authUrl.searchParams.set('scope', 'profile read');
+        authUrl.searchParams.set('state', nextPage);
         res.redirect(authUrl.toString());
     })
     app.get('/settings', async (req, res) => {
@@ -298,7 +370,7 @@ const base = Airtable.base(process.env.AirTableBID);
             pfp: data.pfp,
             ysws: data.verif,
             log: data.log,
-            linked: hkcookiechk(req)
+            linked: await hkcookiechk(data.slackId)
         });
     });
     app.get('/login', (req,res) => {
@@ -325,16 +397,59 @@ const base = Airtable.base(process.env.AirTableBID);
     app.get('/error/:msg', (req, res) => {
         res.render('err', { message: disinfect(req.params.msg) });
     });
-    app.get('/hackatime', (req, res) => {
-        // set a hackatime cookie saying that its linked
-        res.cookie('hklinked', 'true', {
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: isProduction,
-            maxAge: sessionCookieMaxAge,
-        });
-        res.redirect('/dashboard');
-    });
+    async function hakcall(req, res) {
+        const code = req.query.code;
+        const nextPage = typeof req.query.state === 'string' && req.query.state.startsWith('/')
+            ? req.query.state
+            : '/dashboard';
+        if (typeof code !== 'string' || !code) {
+            return res.redirect('/error/HTC: Hackatime authorization code not provided');
+        }
+        try{
+            const token = await xchangecode(code);
+            const accessToken = token.access_token;
+
+            if (!accessToken) {
+                return res.redirect('/error/HTC: Hackatime access token not provided');
+            }
+            const data = await dashauth(req, res);
+            if (!data) {
+                return;
+            }
+
+            const slackId = data.slackId;
+            if (!slackId) {
+                return res.redirect('/error/HTC: Unable to retrieve slack ID for user');
+            }
+            const existing = await base('Users').select({
+                filterByFormula: `{SlackId} = "${slackId}"`,
+                maxRecords: 1
+            }).firstPage();
+
+            if (existing.length > 0) {
+                //check if access tok is already stored
+                const record = existing[0];
+                const stoken = record.get('HackatimeToken');
+                if (stoken){
+                    return res.redirect(nextPage);
+                }
+                else{
+                    await base('Users').update(record.id, {
+                        'HackatimeToken': accessToken
+                    });
+                    return res.redirect(nextPage);
+                }
+            } else {
+
+                return res.redirect('/error/HTC: Unable to find user in database');
+            }
+        } catch (err) {
+            console.error('Airtable User err:', err.message, err.statusCode ?? '');
+            return res.redirect('/error/HTC: Hacktime aToken Err'+ err.message);
+        }
+    }
+    app.get('/hackatime', hakcall);
+    app.get('/hackatimecallback', hakcall);
     app.get('*', (req, res) => {
         res.redirect('/error/Error 404, Page Not Found');
     });
