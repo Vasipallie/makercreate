@@ -116,15 +116,26 @@ const base = Airtable.base(process.env.AirTableBID);
             log: logs
         }
     }
+    function hkcookiechk(req){
+        const hklinked =req.cookies['hklinked'];
+        if (hklinked === 'true'){
+            return true;
+        } else {
+            return false;
+        }
+    }
 // Declaring imporantant variables for auth and sesh mgmt
     const PORT = process.env.PORT || 3000;
     const HCA_CID = process.env.HCA_CID;
     const HCA_SID = process.env.HCA_SID;
+    const HaktimeUID = process.env.HaktimeUID; 
+    const HaktimeAPIK = process.env.HaktimeAPIK;
     const HCAScope = 'email name verification_status slack_id';
     const sessionCookieName = 'makercreate_session';
     const sessionCookieMaxAge = 1000 * 60 * 60 * 24 * 30;
     const isProduction = process.env.NODE_ENV === 'production';
     const RedirectUri = process.env.HACKCLUB_AUTH_REDIRECT_URI || `http://localhost:${PORT}/authenticate`;
+    const HkRedirectUri = process.env.HAKTIME_AUTH_REDIRECT_URI || `http://localhost:${PORT}/hackatime`;
     const authSessions = new Map();
 
 //SLACK INIT
@@ -252,10 +263,27 @@ const base = Airtable.base(process.env.AirTableBID);
             slackId: data.slackId,
             verificationStatus: data.verif,
             pfp: data.pfp,
-            log: data.log
+            log: data.log,
+            linked: hkcookiechk(req)
+
 
         });
     });
+    app.get('/makershop', async (req, res)=>{
+        res.render('makershop', {linked: false});
+    })
+
+    app.get('/hackatimeauth', async (req,res)=>{
+        const nextPage = typeof req.query.next === 'string' && req.query.next.startsWith('/')
+            ? req.query.next
+            : '/dashboard';
+        const authUrl = new URL('https://hackatime.hackclub.com/oauth/authorize');
+        authUrl.searchParams.set('client_id', HaktimeUID);
+        authUrl.searchParams.set('redirect_uri', HkRedirectUri);
+        authUrl.searchParams.set('response_type', 'code');
+        authUrl.searchParams.set('scope', 'profile read');
+        res.redirect(authUrl.toString());
+    })
     app.get('/settings', async (req, res) => {
         const data = await dashauth(req, res);
         if (!data) {
@@ -269,7 +297,8 @@ const base = Airtable.base(process.env.AirTableBID);
             verificationStatus: data.verif,
             pfp: data.pfp,
             ysws: data.verif,
-            log: data.log
+            log: data.log,
+            linked: hkcookiechk(req)
         });
     });
     app.get('/login', (req,res) => {
@@ -297,8 +326,14 @@ const base = Airtable.base(process.env.AirTableBID);
         res.render('err', { message: disinfect(req.params.msg) });
     });
     app.get('/hackatime', (req, res) => {
-        // REMINDER FOR FUTURE ME, ADD HACKATIME LATER
-        res.redirect('/profile')
+        // set a hackatime cookie saying that its linked
+        res.cookie('hklinked', 'true', {
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: isProduction,
+            maxAge: sessionCookieMaxAge,
+        });
+        res.redirect('/dashboard');
     });
     app.get('*', (req, res) => {
         res.redirect('/error/Error 404, Page Not Found');

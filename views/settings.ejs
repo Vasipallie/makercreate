@@ -2,7 +2,7 @@
 
 <style>
   .settings-header span {
-    color: #8a8578;
+    color: #D9D5C8;
     font-size: 0.95em;
   }
   .aboutme {
@@ -17,7 +17,7 @@
   }
   .aboutme .subtitle {
     display: block;
-    color: #8a8578;
+    color: #D9D5C8;
     font-size: 0.9em;
     margin-bottom: 0em;
   }
@@ -29,7 +29,7 @@
     margin-bottom: 1em;
   }
   .info-grid .label {
-    color: #8a8578;
+    color: #D9D5C8;
     font-size: 0.9em;
   }
   .info-grid .value {
@@ -56,13 +56,15 @@
   <h2>About me</h2>
   <div class="info-grid">
     <span class="label">Name</span>
-    <span class="value"><%= locals.name || "undefined" %> <%= locals.lname || "" %></span>
+    <span class="value">: <%= locals.name || "undefined" %> <%= locals.lname || "" %></span>
     <span class="label">YSWS Eligibility</span>
-    <span class="value"><%= locals.ysws || "Unretrievable" %></span>
+    <span class="value">: <%= locals.ysws || "Unretrievable" %></span>
     <span class="label">Email</span>
-    <span class="value"><%= locals.email || "Unretrievable" %></span>
+    <span class="value">: <%= locals.email || "Unretrievable" %></span>
     <span class="label">Slack ID</span>
-    <span class="value"><%= locals.slackId || "Unretrievable" %></span>
+    <span class="value">: <%= locals.slackId || "Unretrievable" %></span>
+    <span class="label">Hackatime Linkage</span>
+    <span class="value">: <%= locals.linked ? "Linked" : "Not Linked" %></span>
   </div>
 
   <div class="btn-row">
