@@ -80,15 +80,15 @@
     <span class="label">Name</span>
     <span class="value"><%= (locals.name || "undefined") + " " + (locals.lname || "") %></span>
     <span class="label">YSWS Eligibility</span>
-    <span class="value"><%= locals.ysws || "Unretrievable" %></span>
+    <span class="value"><%= locals.ysws ?? "Unretrievable" %></span>
     <span class="label">Email</span>
-    <span class="value"><%= locals.email || "Unretrievable" %></span>
+    <span class="value"><%= locals.email ?? "Unretrievable" %></span>
     <span class="label">Slack ID</span>
-    <span class="value"><%= locals.slackId || "Unretrievable" %></span>
+    <span class="value"><%= locals.slackId ?? "Unretrievable" %></span>
     <span class="label">Hackatime</span>
     <span class="value"><%= locals.linked ? "Linked" : "Not Linked" %></span>
     <span class="label">Actual Logs</span>
-    <span class="value"><%= locals.actuallogs || "Unretrievable" %></span>
+    <span class="value"><%= locals.actuallogs ?? "—" %></span>
   </div>
   <div class="btn-row">
     <a href="https://auth.hackclub.com/identity/edit" class="abtn">Edit Profile on HCAuth</a>

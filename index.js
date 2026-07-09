@@ -132,13 +132,22 @@ const base = Airtable.base(process.env.AirTableBID);
                 url = 'resources/pfp.jpg';
             }
         }
-        const data = await base("Users").select({
-            filterByFormula: `{SlackId} = "${identity.slack_id}"`,
-            maxRecords: 1
-        }).firstPage();
-        const holdval = data[0] || null;
-        const loga = holdval ? holdval.get('logs') : 0;
-        const logs = countfx(loga);
+        let loga = 0;
+        try {
+            const data = await base("Users").select({
+                filterByFormula: `{SlackId} = "${identity.slack_id}"`,
+                maxRecords: 1
+            }).firstPage();
+            const holdval = data[0] || null;
+            if (holdval) {
+                loga = holdval.get('Logs') ?? holdval.get('logs') ?? 0;
+            }
+        } catch (err) {
+            console.error(err.message);
+            res.redirect('/error/Unable to retrieve user logs from database');
+            return;
+        }
+        const logs = countfx(loga ?? 0);
         return {
             fname: identity.first_name || 'UnRetrievable',
             lname: identity.last_name || 'UnRetrievable',
@@ -147,7 +156,7 @@ const base = Airtable.base(process.env.AirTableBID);
             verif: identity.verification_status || 'UnRetrievable',
             pfp: url,
             log: logs,
-            actuallogs: loga
+            actuallogs: loga ?? 0
         }
     }
     async function hkcookiechk(slackid){

@@ -21,7 +21,7 @@
       
       <div class="currency">
         <img src="resources/log.png" alt="" class="logimg">
-        <span class="logcount"><%= locals.log || 'Unretrievable' %> logs</span>
+        <span class="logcount"><%= (locals.log ?? locals.logs) %> logs</span>
       </div>
       <div class="profiledata">
         <div class="profi">
