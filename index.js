@@ -368,7 +368,6 @@ const base = Airtable.base(process.env.AirTableBID);
         authUrl.searchParams.set('redirect_uri', redirectUri);
         authUrl.searchParams.set('response_type', 'code');
         authUrl.searchParams.set('scope', 'profile read');
-        authUrl.searchParams.set('state', nextPage);
         res.redirect(authUrl.toString());
     })
     app.get('/settings', async (req, res) => {
