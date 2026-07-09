@@ -76,11 +76,11 @@ const base = Airtable.base(process.env.AirTableBID);
         }
         return payload
     }
-    async function xchangecode(code) {
+    async function xchangecode(code, redirectUri) {
         const tokenBody = new URLSearchParams({
             client_id: HaktimeUID,
             code,
-            redirect_uri: HackatimeRedirectUri,
+            redirect_uri: redirectUri,
             grant_type: 'authorization_code',
         });
         if (HaktimeAPIK) {
@@ -354,7 +354,10 @@ const base = Airtable.base(process.env.AirTableBID);
             : '/dashboard';
         const authUrl = new URL('https://hackatime.hackclub.com/oauth/authorize');
         authUrl.searchParams.set('client_id', HaktimeUID);
-        authUrl.searchParams.set('redirect_uri', HackatimeRedirectUri);
+        const protocol = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0].trim();
+        const host = req.get('host');
+        const redirectUri = HackatimeRedirectUri || `${protocol}://${host}/hackatime`;
+        authUrl.searchParams.set('redirect_uri', redirectUri);
         authUrl.searchParams.set('response_type', 'code');
         authUrl.searchParams.set('scope', 'profile read');
         authUrl.searchParams.set('state', nextPage);
@@ -410,7 +413,9 @@ const base = Airtable.base(process.env.AirTableBID);
             return res.redirect('/error/HTC: Hackatime authorization code not provided');
         }
         try{
-            const token = await xchangecode(code);
+            const protocol = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0].trim();
+            const redirectUri = `${protocol}://${req.get('host')}${req.path}`;
+            const token = await xchangecode(code, redirectUri);
             const accessToken = token.access_token;
 
             if (!accessToken) {
