@@ -46,6 +46,7 @@ const base = Airtable.base(process.env.AirTableBID);
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                
                 client_id: HCA_CID,
                 client_secret: HCA_SID,
                 redirect_uri: RedirectUri,
@@ -96,7 +97,10 @@ const base = Airtable.base(process.env.AirTableBID);
 
         if (!response.ok) {
             const message = payload?.error_description || payload?.error || 'Hackatime token exchange failed';
-            throw new Error(message);
+            const error = new Error(message);
+            error.statusCode = response.status;
+            error.payload = payload;
+            throw error;
         }
         return payload;
     }
@@ -174,7 +178,7 @@ const base = Airtable.base(process.env.AirTableBID);
     const sessionCookieMaxAge = 1000 * 60 * 60 * 24 * 30;
     const isProduction = process.env.NODE_ENV === 'production';
     const RedirectUri = process.env.HACKCLUB_AUTH_REDIRECT_URI || `http://localhost:${PORT}/authenticate`;
-    const HackatimeRedirectUri = process.env.HAKTIME_AUTH_REDIRECT_URI || process.env.HAKTIME_AUTH_TREDICT_URI || `http://localhost:${PORT}/hackatime`;
+    const HackatimeRedirectUri = process.env.HAKTIME_AUTH_REDIRECT_URI || `http://localhost:${PORT}/hackatime`;
     const authSessions = new Map();
 
 //SLACK INIT
@@ -444,8 +448,8 @@ const base = Airtable.base(process.env.AirTableBID);
                 return res.redirect('/error/HTC: Unable to find user in database');
             }
         } catch (err) {
-            console.error('Airtable User err:', err.message, err.statusCode ?? '');
-            return res.redirect('/error/HTC: Hacktime aToken Err'+ err.message);
+            console.error('Hackatime token exchange err:', err.message, err.statusCode ?? '', err.payload ?? '');
+            return res.redirect('/error/HTC: Hackatime token exchange failed: ' + err.message);
         }
     }
     app.get('/hackatime', hakcall);
