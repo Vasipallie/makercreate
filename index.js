@@ -352,11 +352,13 @@ const base = Airtable.base(process.env.AirTableBID);
         const nextPage = typeof req.query.next === 'string' && req.query.next.startsWith('/')
             ? req.query.next
             : '/dashboard';
+        const config = getHackatimeConfig(req);
         const authUrl = new URL('https://hackatime.hackclub.com/oauth/authorize');
-        authUrl.searchParams.set('client_id', HaktimeUID);
+        authUrl.searchParams.set('client_id', config.uid);
         const protocol = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0].trim();
         const host = req.get('host');
-        const redirectUri = HackatimeRedirectUri || `${protocol}://${host}/hackatime`;
+        const redirectUri = config.redirectUri || `${protocol}://${host}/hackatime`;
+        console.log('[DEBUG AUTH] Host:', host, 'Protocol:', protocol, 'Constructed redirectUri:', redirectUri, 'config.uid:', config.uid);
         authUrl.searchParams.set('redirect_uri', redirectUri);
         authUrl.searchParams.set('response_type', 'code');
         authUrl.searchParams.set('scope', 'profile read');
