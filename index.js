@@ -181,6 +181,14 @@ const base = Airtable.base(process.env.AirTableBID);
     const HackatimeRedirectUri = process.env.HAKTIME_AUTH_REDIRECT_URI;
     const authSessions = new Map();
 
+    function getHackatimeConfig(req) {
+        return {
+            uid: HaktimeUID,
+            apiKey: HaktimeAPIK,
+            redirectUri: HackatimeRedirectUri
+        };
+    }
+
 //SLACK INIT
     import { WebClient } from "@slack/web-api";
     const client = new WebClient(process.env.SlackBT);
@@ -368,6 +376,7 @@ const base = Airtable.base(process.env.AirTableBID);
         authUrl.searchParams.set('redirect_uri', redirectUri);
         authUrl.searchParams.set('response_type', 'code');
         authUrl.searchParams.set('scope', 'profile read');
+        authUrl.searchParams.set('state', nextPage);
         res.redirect(authUrl.toString());
     })
     app.get('/settings', async (req, res) => {
