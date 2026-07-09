@@ -1,86 +1,115 @@
-<%- include('partials/head', { title: 'Dashboard', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
+<%- include('partials/head', { title: 'Settings', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
 
 <style>
-  .settings-header span {
-    color: #D9D5C8;
-    font-size: 0.95em;
+  .settings-header {
+    margin-bottom: 0.6em;
   }
-  .aboutme {
-    margin-block: 1em;
-    padding: 0.5em;
-    border: 1px solid #c8d9ce;
-    border-radius: 0.1em;
-  }
-  .aboutme h2 {
+  .settings-header h1 {
     margin: 0;
-    line-height: 1;
+    line-height: 0.9;
+    font-size: clamp(1rem, 8vw, 2.8rem);
+    letter-spacing: -0.04em;
+    color: #ffffff;
   }
-  .aboutme .subtitle {
+  .settings-header span {
     display: block;
-    color: #D9D5C8;
-    font-size: 0.9em;
-    margin-bottom: 0em;
+    font-size: 0.85em;
+    color: #cccccc;
+    letter-spacing: 0.02em;
+  }
+  .settings-section {
+    display: flex;
+    flex-direction: column;
+    padding: 0.6em 0.7em;
+    border: 2px solid #A5A7A5;
+    margin-bottom: 0.5em;
+  }
+
+  .settings-section-title {
+    font-size: 1.2em;
+    line-height: 1;
+    margin:0;
+    color: #ffffff;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+  }
+  .settings-section-subtitle {
+    display: block;
+    font-size: 0.8em;
+    color: #cccccc;
+    margin-bottom: 0.6em;
+    letter-spacing: 0.01em;
   }
   .info-grid {
     display: grid;
     grid-template-columns: max-content 1fr;
-    row-gap: 0.4em;
-    column-gap: 1em;
-    margin-bottom: 1em;
+    row-gap: 0.1em;
+    column-gap: 0.5em;
+    margin-bottom: 0.7em;
+    font-size: 0.88em;
   }
   .info-grid .label {
-    color: #D9D5C8;
-    font-size: 0.9em;
+    color: #dfdfdf;
+    letter-spacing: 0.02em;
   }
   .info-grid .value {
+    color: #dfdfdf;
     font-weight: 500;
   }
+  .info-grid .value::before {
+    content: ': ';
+    color: #dfdfdf;
+  }
+
   .btn-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6em;
-  }
-
-  .logout {
-    display: inline-block;
-    margin-top: 0.5em;
+    gap: 0.2em;
   }
 </style>
 
 <div class="settings-header">
   <h1>./MakerCreate Settings</h1>
-  <span>This is your settings page, <%= locals.name || "" %></span>
+  <span>These are your settings, <%= locals.name || "" %></span>
 </div>
 
-<div class="aboutme">
-  <h2>About me</h2>
+<div class="settings-section">
+  <span class="settings-section-title">About me</span>
+  <span class="settings-section-subtitle">Your account details pulled from HackClub Auth.</span>
   <div class="info-grid">
     <span class="label">Name</span>
-    <span class="value">: <%= locals.name || "undefined" %> <%= locals.lname || "" %></span>
+    <span class="value"><%= (locals.name || "undefined") + " " + (locals.lname || "") %></span>
     <span class="label">YSWS Eligibility</span>
-    <span class="value">: <%= locals.ysws || "Unretrievable" %></span>
+    <span class="value"><%= locals.ysws || "Unretrievable" %></span>
     <span class="label">Email</span>
-    <span class="value">: <%= locals.email || "Unretrievable" %></span>
+    <span class="value"><%= locals.email || "Unretrievable" %></span>
     <span class="label">Slack ID</span>
-    <span class="value">: <%= locals.slackId || "Unretrievable" %></span>
-    <span class="label">Hackatime Linkage</span>
-    <span class="value">: <%= locals.linked ? "Linked" : "Not Linked" %></span>
+    <span class="value"><%= locals.slackId || "Unretrievable" %></span>
+    <span class="label">Hackatime</span>
+    <span class="value"><%= locals.linked ? "Linked" : "Not Linked" %></span>
+    <span class="label">Actual Logs</span>
+    <span class="value"><%= locals.actuallogs || "Unretrievable" %></span>
   </div>
-
   <div class="btn-row">
     <a href="https://auth.hackclub.com/identity/edit" class="abtn">Edit Profile on HCAuth</a>
   </div>
 </div>
 
-<div class="aboutme">
-  <h2>HackClub Policies</h2>
-  <span class="subtitle">Review our community guidelines and policies.</span>
+<div class="settings-section">
+  <span class="settings-section-title">HackClub Policies</span>
+  <span class="settings-section-subtitle">Review our community guidelines and policies.</span>
   <div class="btn-row">
     <a href="https://hackclub.com/privacy-and-terms" class="abtn">Privacy Policy</a>
     <a href="https://hackclub.com/conduct" class="abtn">Code of Conduct</a>
   </div>
 </div>
 
-<a href="/logout" class="logout abtn">Logout of MakerCreate</a>
+<div class="settings-section" style="border-color: #971414;">
+  <span class="settings-section-title">Danger Zone</span>
+  <span class="settings-section-subtitle">These actions affect your session</span>
+  <div class="btn-row">
+    <a href="/logout" class="logout abtn">Logout of MakerCreate</a>
+  </div>
+</div>
 
 <%- include('partials/foot') %>

@@ -29,8 +29,9 @@ html, body {
 .App-header h1 {
   margin: 0;
   line-height: 0.9;
-  font-size: clamp(1rem, 10vw, 4rem);
+  font-size: clamp(1rem, 8vw, 2.8rem);
   letter-spacing: -0.04em;
+  color: #ffffff;
 }
 
 .subtitle {
@@ -80,11 +81,11 @@ html, body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 12em;
+  width: 11em;
   background-color: #1A1D21;
   box-sizing: border-box;
-  gap: 0.15em;
-  border-right: 2px solid #A6A6A6;
+  gap: 0.10em;
+  border-right: 1px solid #A6A6A6;
 }
 
 .navbtn {
@@ -122,10 +123,12 @@ html, body {
 .navitem:hover{
   color:#000000;
   background-color:#00ff0d;
+  border: 2px solid #000000;
 }
 .navitem:active{
   color:#0F0F0D;
   background-color:#04f310;
+  
 }
 
 hr {
@@ -139,7 +142,7 @@ hr {
   justify-content:center;
   background-color:#000000;
   width:100%;
-  height:7.3em;
+  height:6.7em;
   border-bottom: 1px solid #ffffff;
 }
 .content{
@@ -153,17 +156,20 @@ hr {
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 0.55em 0.6em 0.6em;
+  padding: 0.2em;
   width: 100%;
   box-sizing: border-box;
   background-color: #0a0c0a;
-  border-top: 1px solid #3b4238;
 }
 .currency {
   display: flex;
+  box-sizing: border-box;
   align-items: center;
   gap: 0.4em;
-  padding: 0em 0.1em;
+  padding: 0em 0.5em;
+  height:3em;
+  background-color: #0a0c0a;
+  border-top:2px solid #3b4238;
 }
 
 .logimg {
@@ -188,8 +194,8 @@ hr {
   box-sizing: border-box;
 }
 .profileimg {
-  width: 2.2em;
-  height: 2.2em;
+  width: 2em;
+  height: 2em;
   border-radius: 50%;
   flex-shrink: 0;
   border: 1px solid #3b4238;
@@ -235,7 +241,7 @@ hr {
   color:#ffffff;
   padding-block:0.25em;
   padding-inline:0.5em;
-  background-color:#3e0707;
+  background-color:#971414;
 }
 .logout:hover{
   color:#ff0000;

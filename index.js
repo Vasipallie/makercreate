@@ -132,9 +132,13 @@ const base = Airtable.base(process.env.AirTableBID);
                 url = 'resources/pfp.jpg';
             }
         }
-
-        const logs = countfx(0); // From Airtable once i get it working :(
-
+        const data = await base("Users").select({
+            filterByFormula: `{SlackId} = "${identity.slack_id}"`,
+            maxRecords: 1
+        }).firstPage();
+        const holdval = data[0] || null;
+        const loga = holdval ? holdval.get('logs') : 0;
+        const logs = countfx(loga);
         return {
             fname: identity.first_name || 'UnRetrievable',
             lname: identity.last_name || 'UnRetrievable',
@@ -142,7 +146,8 @@ const base = Airtable.base(process.env.AirTableBID);
             slackId: identity.slack_id || 'UnRetrievable',
             verif: identity.verification_status || 'UnRetrievable',
             pfp: url,
-            log: logs
+            log: logs,
+            actuallogs: loga
         }
     }
     async function hkcookiechk(slackid){
@@ -276,7 +281,8 @@ const base = Airtable.base(process.env.AirTableBID);
             await base('Users').create({
                 SlackId: slackId,
                 Name: fname,
-                Email: email
+                Email: email,
+                logs: 0
             });
             return true;
 
@@ -393,6 +399,7 @@ const base = Airtable.base(process.env.AirTableBID);
             pfp: data.pfp,
             ysws: data.verif,
             log: data.log,
+            actuallogs: data.actuallogs,
             linked: await hkcookiechk(data.slackId)
         });
     });

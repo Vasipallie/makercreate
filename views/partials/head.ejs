@@ -18,12 +18,12 @@
         <a class="navitem" href="https://hackclub.enterprise.slack.com/archives/C0AGB5HP066"># makercreate-slack</a>
         <a class="navitem" href="/settings"># settings</a>
       </div>
+      
+      <div class="currency">
+        <img src="resources/log.png" alt="" class="logimg">
+        <span class="logcount"><%= locals.log || 'Unretrievable' %> logs</span>
+      </div>
       <div class="profiledata">
-        <div class="currency">
-          <img src="resources/log.png" alt="" class="logimg">
-          <span class="logcount"><%= locals.log || 0 %> logs</span>
-        </div>
-        <hr>
         <div class="profi">
           <img src="<%= locals.pfp || 'resources/pfp.jpg' %>" alt="pfp" class="profileimg">
           <div class="profilt">
