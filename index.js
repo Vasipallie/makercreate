@@ -255,9 +255,6 @@ const base = Airtable.base(process.env.AirTableBID);
                     }
                 }
             ]);
-            records.forEach((record) => {
-                console.log('Created RSVP record:', record.getId());
-            });
         } catch (err) {
             console.error('Airtable RSVP error:', err.message, err.statusCode ?? '');
         }
@@ -320,12 +317,6 @@ const base = Airtable.base(process.env.AirTableBID);
                 createdAt: Date.now(),
             });
             setSessionCookie(res, sessionId);
-            console.log(
-                identity.identity?.primary_email,
-                identity.identity?.first_name,
-                identity.identity?.last_name,
-                identity.identity?.slack_id
-            );
             await rsvpdbs(identity);
             const userCreated = await userdbs(identity);
             if (!userCreated) {
@@ -378,7 +369,6 @@ const base = Airtable.base(process.env.AirTableBID);
         const protocol = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0].trim();
         const host = req.get('host');
         const redirectUri = config.redirectUri || `${protocol}://${host}/hackatime`;
-        console.log('[DEBUG AUTH] Host:', host, 'Protocol:', protocol, 'Constructed redirectUri:', redirectUri, 'config.uid:', config.uid);
         authUrl.searchParams.set('redirect_uri', redirectUri);
         authUrl.searchParams.set('response_type', 'code');
         authUrl.searchParams.set('scope', 'profile read');
