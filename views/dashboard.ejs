@@ -1,12 +1,12 @@
 <%- include('partials/head', { title: 'Dashboard', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
 
-<h1>./MakerCreate Dashboard</h1>
- <% if (locals.linked === false || locals.linked === undefined){ %>
+<h1>./MakerCreate Dashboard</h1><!-- 
+ <% if (locals.linked === false || locals.linked === undefined){ %> -->
 <div class="linkage">
     <p class="linkh">Link Hackatime</p>
     <p>Link hackatime to your MakerCreate account to track your coding activity.</p>
     <a  href="/hackatimeauth" class="btn">Link Account</a>
-</div>
-<% } %>
+</div><!-- 
+<% } %> -->
 
 <%- include('partials/foot') %>
