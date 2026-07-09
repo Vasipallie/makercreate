@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Questrial&display=swap');
+@font-face {
+  font-family: 'bms';
+  src: url('resources/bms.ttf') format('truetype');
+}
+html, body {
+  background-color: #232F3E;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  font-family: "Questrial", sans-serif;
+  background-color: #000000;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  font-size: calc(10px + 2vmin);
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  color: #D9D5C8;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.nav {
+  display: flex;
+  flex-direction: row;
+  height: 3em;
+  width: 100%;
+  background-color: #131921;
+  box-sizing: border-box;
+  gap: 0.7em;
+  border-bottom: 2px solid #A6A6A6;
+  padding: 0.2em;
+  align-items: center;
+
+}
+
+vr{
+  border: 1px solid #A6A6A6;
+  height:100%;
+}
+.location p{
+  font-size:0.8em;
+  line-height:1em;
+  margin:0;
+  color:#D9D5C8;
+}
+.location > div{
+  display: flex;
+  align-items: center;
+  gap: 0.1em;
+}
+.location span{
+  font-size:0.9em;
+  line-height:1em;
+  margin:0;
+}
+.location img{
+  display: block;
+}
