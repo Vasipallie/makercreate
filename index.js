@@ -178,7 +178,7 @@ const base = Airtable.base(process.env.AirTableBID);
     const sessionCookieMaxAge = 1000 * 60 * 60 * 24 * 30;
     const isProduction = process.env.NODE_ENV === 'production';
     const RedirectUri = process.env.HACKCLUB_AUTH_REDIRECT_URI || `http://localhost:${PORT}/authenticate`;
-    const HackatimeRedirectUri = process.env.HAKTIME_AUTH_REDIRECT_URI || `http://localhost:${PORT}/hackatime`;
+    const HackatimeRedirectUri = process.env.HAKTIME_AUTH_REDIRECT_URI;
     const authSessions = new Map();
 
 //SLACK INIT
