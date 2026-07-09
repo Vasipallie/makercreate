@@ -433,7 +433,7 @@ const base = Airtable.base(process.env.AirTableBID);
         }
         try{
             const protocol = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0].trim();
-            const redirectUri = `${protocol}://${req.get('host')}${req.path}`;
+            const redirectUri = HackatimeRedirectUri || `${protocol}://${req.get('host')}/hackatime`;
             const token = await xchangecode(code, redirectUri);
             const accessToken = token.access_token;
 
