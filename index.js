@@ -39,7 +39,7 @@ const base = Airtable.base(process.env.AirTableBID);
     return string.replace(reg, (match)=>(map[match]));
     }
     //Exchange Code for Token system via HCA
-    async function eC4T(code) {
+    async function eC4T(code, redirectUri) {
         const response = await fetch('https://auth.hackclub.com/oauth/token', {
             method: 'POST',
             headers: {
@@ -49,7 +49,7 @@ const base = Airtable.base(process.env.AirTableBID);
                 
                 client_id: HCA_CID,
                 client_secret: HCA_SID,
-                redirect_uri: RedirectUri,
+                redirect_uri: redirectUri,
                 code,
                 grant_type: 'authorization_code',
             }),
@@ -295,7 +295,9 @@ const base = Airtable.base(process.env.AirTableBID);
             return res.redirect('/error/Missing authentication credentials');
         }
         try {
-            const token = await eC4T(code);
+            const protocol = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0].trim();
+            const redirectUri = RedirectUri || `${protocol}://${req.get('host')}/authenticate`;
+            const token = await eC4T(code, redirectUri);
             const identity = await fetchIdenti(token.access_token);
             const sessionId = randomUUID();
             authSessions.set(sessionId, {
@@ -349,6 +351,10 @@ const base = Airtable.base(process.env.AirTableBID);
         res.render('makershop', {linked: false});
     })
     app.get('/hackatimeauth', async (req,res)=>{
+        const session = getSession(req);
+        if (!session) {
+            return res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);
+        }
         const nextPage = typeof req.query.next === 'string' && req.query.next.startsWith('/')
             ? req.query.next
             : '/dashboard';
@@ -388,7 +394,10 @@ const base = Airtable.base(process.env.AirTableBID);
             : '/dashboard';
         const authUrl = new URL('https://auth.hackclub.com/oauth/authorize');
         authUrl.searchParams.set('client_id', HCA_CID);
-        authUrl.searchParams.set('redirect_uri', RedirectUri);
+        const protocol = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0].trim();
+        const host = req.get('host');
+        const redirectUri = RedirectUri || `${protocol}://${host}/authenticate`;
+        authUrl.searchParams.set('redirect_uri', redirectUri);
         authUrl.searchParams.set('response_type', 'code');
         authUrl.searchParams.set('scope', HCAScope);
         authUrl.searchParams.set('state', nextPage);
@@ -438,18 +447,11 @@ const base = Airtable.base(process.env.AirTableBID);
             }).firstPage();
 
             if (existing.length > 0) {
-                //check if access tok is already stored
                 const record = existing[0];
-                const stoken = record.get('HackatimeToken');
-                if (stoken){
-                    return res.redirect(nextPage);
-                }
-                else{
-                    await base('Users').update(record.id, {
-                        'HackatimeToken': accessToken
-                    });
-                    return res.redirect(nextPage);
-                }
+                await base('Users').update(record.id, {
+                    'HackatimeToken': accessToken
+                });
+                return res.redirect(nextPage);
             } else {
 
                 return res.redirect('/error/HTC: Unable to find user in database');
