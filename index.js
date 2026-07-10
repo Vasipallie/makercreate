@@ -362,6 +362,17 @@
         if (!data) {
             return;
         }
+        const projects = await base('Projects').select({
+            filterByFormula: `{SlackId} = "${data.slackId}"`,
+            maxRecords: 100
+        }).firstPage();
+        const projectData = projects.map(project => ({
+            name: project.get('Name'),
+            description: project.get('Description'),
+            category: project.get('Category'),
+            image: project.get('Image'),
+            status: project.get('Status')
+        }));
         const linked = await hkcookiechk(data.slackId);
         res.render('dashboard', {
             name: data.fname,
@@ -370,8 +381,8 @@
             verificationStatus: data.verif,
             pfp: data.pfp,
             log: data.log,
-            linked
-
+            linked,
+            projects: projectData
         });
     });
     app.get('/makershop', async (req, res)=>{
@@ -524,7 +535,8 @@
             'Description':description,
             'Category':category,
             'Image':url,
-            'SlackId': slackId
+            'SlackId': slackId,
+            'Status':'Draft'
         });
         res.redirect('/dashboard');
     });

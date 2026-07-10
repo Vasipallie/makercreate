@@ -10,22 +10,26 @@
 </div>
 <% } %>
 
-
 <h2>Your Projects</h2>
 <p>These are your makercreate projects</p>
 <div class="projects">
-    
-    <div class="project" style="background-image: url('/resources/promoter.png');">
-        <div class="textareas">
-            <div class="tags">
-                <tag>Software</tag>
-                <tag>Unreviewed</tag>
-            </div>
-            <h1 class="titlep">Fix Fam</h1>
-            <p class="descp">A project to fix the fam</p>
-        </div>
-    </div>
 
+    <% if (locals.projects && locals.projects.length > 0) { %>
+        <% locals.projects.forEach(project => { %>
+            <div class="project" style="background-image: url('<%= project.image || '/resources/promoter.png' %>');">
+                <div class="textareas">
+                    <div class="tags">
+                        <tag><%= project.category %></tag>
+                        <tag><%= project.status %></tag>
+                    </div>
+                    <h1 class="titlep"><%= project.name %></h1>
+                    <p class="descp"><%= project.description %></p>
+                </div>
+            </div>
+        <% }); %>
+    <% } else { %>
+        <p>No projects found. Create a new project to get started!</p>
+    <% } %>
 
     <a class="cprojec project" href="/createproject">
         <img src="/resources/upload.svg" alt="Add Project" class="addicon">
