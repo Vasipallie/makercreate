@@ -1,5 +1,6 @@
 //Imports
     import express from 'express';
+    import multer from 'multer';
     import cookieParser from 'cookie-parser';
     import { dirname } from 'path';
     import { randomUUID } from 'crypto';
@@ -11,13 +12,16 @@
     import path from 'path';
 
 //AIRTABLE INIT
-Airtable.configure({
-    endpointUrl: 'https://api.airtable.com',
-    apiKey: process.env.AirTableAPIK
-});
-const base = Airtable.base(process.env.AirTableBID);
+    Airtable.configure({
+        endpointUrl: 'https://api.airtable.com',
+        apiKey: process.env.AirTableAPIK
+    });
+    const base = Airtable.base(process.env.AirTableBID);
 //MIDDLEWARE
     const app = express();
+    app.use(express.urlencoded({ extended: true }));
+    app.use(express.json());
+    const upload = multer({ storage: multer.memoryStorage() });
     app.use(cookieParser());
     app.use('/models', express.static(path.join(__dirname, 'views', 'resources', 'models')));
     app.use('/three', express.static(path.join(__dirname, 'node_modules', 'three')));
@@ -184,6 +188,7 @@ const base = Airtable.base(process.env.AirTableBID);
 // Declaring imporantant variables for auth and sesh mgmt
     const PORT = process.env.PORT || 3000;
     const HCA_CID = process.env.HCA_CID;
+    const HCDN = process.env.HCDN_APIK;
     const HCA_SID = process.env.HCA_SID;
     const HaktimeUID = process.env.HaktimeUID; 
     const HaktimeAPIK = process.env.HaktimeAPIK;
@@ -194,7 +199,6 @@ const base = Airtable.base(process.env.AirTableBID);
     const RedirectUri = process.env.HACKCLUB_AUTH_REDIRECT_URI || `http://localhost:${PORT}/authenticate`;
     const HackatimeRedirectUri = process.env.HAKTIME_AUTH_REDIRECT_URI;
     const authSessions = new Map();
-
     function getHackatimeConfig(req) {
         return {
             uid: HaktimeUID,
@@ -264,6 +268,16 @@ const base = Airtable.base(process.env.AirTableBID);
                     }
                 }
             ]);
+            try{
+                const leadercord = await base('Leaderboard').create({
+                    fields: {
+                        SlackID: slackId,
+                        Hours: 0
+                    }
+                })
+            }catch(err){
+                console.error('Airtable Lleaderboard creation error:', err.message, err.statusCode ?? '');
+            }
         } catch (err) {
             console.error('Airtable RSVP error:', err.message, err.statusCode ?? '');
         }
@@ -349,7 +363,6 @@ const base = Airtable.base(process.env.AirTableBID);
             return;
         }
         const linked = await hkcookiechk(data.slackId);
-
         res.render('dashboard', {
             name: data.fname,
             email: data.email,
@@ -475,6 +488,46 @@ const base = Airtable.base(process.env.AirTableBID);
             return res.redirect('/error/HTC: Hackatime token exchange failed: ' + err.message);
         }
     }
+    app.get('/createproject', async (req, res) => {
+        const data = await dashauth(req, res);
+        if (!data) {
+            return;
+        }
+        res.render('createproject', {
+            name: data.fname,
+            email: data.email,
+            slackId: data.slackId,
+            verificationStatus: data.verif,
+            pfp: data.pfp,
+            log: data.log,
+        });
+    });
+    app.post('/createprj', upload.single('image'), async (req,res) =>{
+        const {slackId, name, description, category} = req.body || {};
+        let url = "";
+        if (req.file){
+            const formData = new FormData();
+            const blob = new Blob([req.file.buffer], { type: req.file.mimetype });
+            formData.append('file', blob, req.file.originalname);
+            const response = await fetch('https://cdn.hackclub.com/api/v4/upload', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HCDN}` },
+                body: formData
+            });
+            const json = await response.json();
+            url = json.url;
+            console.log(`Image uploaded to: ${url}`);
+
+        }
+        const record = await base('Projects').create({
+            'Name':name,
+            'Description':description,
+            'Category':category,
+            'Image':url,
+            'SlackId': slackId
+        });
+        res.redirect('/dashboard');
+    });
     app.get('/hackatime', hakcall);
     app.get('/hackatimecallback', hakcall);
     app.get('*', (req, res) => {
@@ -482,14 +535,14 @@ const base = Airtable.base(process.env.AirTableBID);
     });
 
 //START SERVER
-const server = app.listen(PORT, ()=>{
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`Visit http://localhost:${PORT}`);
-});
+    const server = app.listen(PORT, ()=>{
+        console.log(`Server is running on port ${PORT}`);
+        console.log(`Visit http://localhost:${PORT}`);
+    });
 
-process.on('SIGINT', () => {
-    server.close(() => process.exit(0));
-});
-process.on('SIGTERM', () => {
-    server.close(() => process.exit(0));
-});
+    process.on('SIGINT', () => {
+        server.close(() => process.exit(0));
+    });
+    process.on('SIGTERM', () => {
+        server.close(() => process.exit(0));
+    });

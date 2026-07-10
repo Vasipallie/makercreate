@@ -1,6 +1,7 @@
 <%- include('partials/head', { title: 'Dashboard', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
 
 <h1>./MakerCreate Dashboard</h1>
+
  <% if (locals.linked === false || locals.linked === undefined){ %>
 <div class="linkage">
     <p class="linkh">Link Hackatime</p>
@@ -8,4 +9,27 @@
     <a  href="/hackatimeauth" class="btn">Link Account</a>
 </div>
 <% } %>
+
+
+<h2>Your Projects</h2>
+<p>These are your makercreate projects</p>
+<div class="projects">
+    
+    <div class="project" style="background-image: url('/resources/promoter.png');">
+        <div class="textareas">
+            <div class="tags">
+                <tag>Software</tag>
+                <tag>Unreviewed</tag>
+            </div>
+            <h1 class="titlep">Fix Fam</h1>
+            <p class="descp">A project to fix the fam</p>
+        </div>
+    </div>
+
+
+    <a class="cprojec project" href="/createproject">
+        <img src="/resources/upload.svg" alt="Add Project" class="addicon">
+        <p>Create a New Project</p>
+    </a>
+</div>
 <%- include('partials/foot') %>
