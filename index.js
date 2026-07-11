@@ -371,9 +371,11 @@
             description: project.get('Description'),
             category: project.get('Category'),
             image: project.get('Image'),
-            status: project.get('Status')
+            status: project.get('Status'),
+            ProjectID: project.get('ProjectID')
         }));
         const linked = await hkcookiechk(data.slackId);
+        console.log(projectData);
         res.render('dashboard', {
             name: data.fname,
             email: data.email,
@@ -540,18 +542,51 @@
         });
         res.redirect('/dashboard');
     });
+    app.get('/project/:id', async (req, res) => {
+        const prjdata = await base('Projects').select({
+            filterByFormula: `{ProjectID} = "${req.params.id}"`,
+            maxRecords: 1
+        }).firstPage();
+        console.log(prjdata[0]);
+        res.render('project', { project: prjdata[0]});
+    });
+    app.delete('/deleteprj/:id', async (req, res) => {
+        const infodata= await dashauth(req, res);
+        if (!infodata) {
+            return;
+        }
+        const projectId = req.params.id;
+        const slackcheck = await base('Projects').select({
+            filterByFormula: `{ProjectID} = "${projectId}"`,
+            maxRecords: 1
+        }).firstPage();
+        if (slackcheck.length === 0) {
+            return res.status(404).redirect('/error/Project not found');
+        }
+        const project = slackcheck[0];
+        if (project.get('SlackId') !== infodata.slackId) {
+            return res.status(403).redirect('/error/You are not authorized to delete this project');
+        }
+        try{
+            await base('Projects').destroy(project.id);
+            return res.status(200).redirect('/dashboard');
+        }catch(err){
+            return res.status(500).redirect('/error/Unable to delete project');
+        }
+
+    });
     app.get('/hackatime', hakcall);
     app.get('/hackatimecallback', hakcall);
     app.get('*', (req, res) => {
         res.redirect('/error/Error 404, Page Not Found');
     });
 
+
 //START SERVER
     const server = app.listen(PORT, ()=>{
         console.log(`Server is running on port ${PORT}`);
         console.log(`Visit http://localhost:${PORT}`);
     });
-
     process.on('SIGINT', () => {
         server.close(() => process.exit(0));
     });

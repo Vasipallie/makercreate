@@ -16,7 +16,7 @@
 
     <% if (locals.projects && locals.projects.length > 0) { %>
         <% locals.projects.forEach(project => { %>
-            <div class="project" style="background-image: url('<%= project.image || '/resources/promoter.png' %>');">
+            <a class="project" href="/project/<%= project.ProjectID %>" style="background-image: url('<%= project.image || '/resources/promoter.png' %>');">
                 <div class="textareas">
                     <div class="tags">
                         <tag><%= project.category %></tag>
@@ -25,7 +25,7 @@
                     <h1 class="titlep"><%= project.name %></h1>
                     <p class="descp"><%= project.description %></p>
                 </div>
-            </div>
+            </a>
         <% }); %>
     <% } else { %>
         <p>No projects found. Create a new project to get started!</p>
