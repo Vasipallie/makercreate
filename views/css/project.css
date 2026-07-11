@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
+
 html, body {
   background-color: #0C0C0C;
   padding: 0;
@@ -9,62 +10,41 @@ html, body {
 .App-header {
   font-family: "Questrial", sans-serif;
   background-color: #0C0C0C;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: left;
+  gap: 0.5em;
   font-size: calc(10px + 2vmin);
   line-height: 1.5;
   letter-spacing: 0.01em;
   color: #D9D5C8;
   box-sizing: border-box;
   padding: 2em;
-  align-items: left;
 }
 
 h1 {
-  margin:0;
-  line-height: 1.3em;
-  font-size:clamp(1.2rem, 8vw, 2.8rem);;
+  margin: 0;
+  font-size: clamp(1.2rem, 8vw, 2.8rem);
   letter-spacing: -0.04em;
   color: #ffffff;
 }
 
-/* width */
-::-webkit-scrollbar {
-  width: 5px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #1b1b1b;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #9b9b9b;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #ffffff;
-}
-
-.subtitle {
-  display: block;
-  font-size: clamp(1rem, 1.8vw, 1.35rem);
+p {
   margin: 0;
-  line-height: 1.4;
-  color: D9D5C8;
+  padding: 0;
 }
 
-.crt {
-  position: relative;
-}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #1b1b1b; }
+::-webkit-scrollbar-thumb { background: #9b9b9b; }
+::-webkit-scrollbar-thumb:hover { background: #ffffff; }
+
+.crt { position: relative; }
 
 .crt::before {
   content: " ";
   position: absolute;
-  display: block;
   inset: 0;
   z-index: 2;
   pointer-events: none;
@@ -80,64 +60,70 @@ h1 {
   to { background-position: 0 24px, 0 0; }
 }
 
-.crt::after {
-  content: " ";
+.imghold {
+  width: 100%;
+  max-width: 500px;
+}
+
+.imghold img {
   display: block;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: rgba(18, 16, 16, 0.034);
-  opacity: 0;
-  z-index: 2;
-  pointer-events: none;
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border: 2px solid #D9D5C8;
+  padding: 0.2em;
+  box-sizing: border-box;
 }
-img{
-  display:block;
-  max-height:15em;
-  max-width:30em;
-  border:2px solid #D9D5C8;
-  padding:0.2em;
+
+.prjinfo {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5em;
 }
-.prjinfo{
-  width:100%;
-  height:100%;
-  align-items:left;
+
+.tags {
+  display: flex;
+  gap: 0.5em;
+  flex-direction: row;
 }
-tag{
-  font-size:0.8em;
-  line-height:0.5em;
-  background-color:#DA532C;
-  color:#ffffff;
-  margin:0;
-  padding:0.5em;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+
+tag {
+  font-size: 0.8em;
+  background-color: #DA532C;
+  color: #ffffff;
+  padding: 0.4em 0.8em;
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
-.tags{
-  display:flex;
-  gap:0.5em;
-  flex-direction:row;
-  margin:0;
-  margin-top:0.3em;
+
+.prjdesc {
+  font-size: 0.85em;
+  line-height: 1.4em;
 }
-p{
-  margin:0;
-  padding:0;
+
+.prjbtn {
+  border: 1px solid #3b4238;
+  background-color: #000000;
+  color: #ffffff;
+  padding: 0.4em 0.9em;
+  font-family: "Questrial", monospace;
+  font-size: 0.9em;
+  text-decoration: none;
+  display: inline-block;
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
-.prjdesc{
-  font-size:0.8em;
-  line-height:1.2em;
-  margin:0;
-  margin-top:0.5em;
-  padding:0;
+
+.prjbtn:hover {
+  border-color: #D9D5C8;
+  color: #D9D5C8;
 }
-.prjbtn{
-  border:1px solid #3b4238;
-  background-color:#000000;
-  color:#ffffff;
-  padding:0.1em 0.5em;
-  margin:0;
-  font-family: 'Questrial', monospace;
-  font-size:0.9em;
-  text-decoration:none;
+
+.imghold .prjbtn {
+  margin-bottom: 0.5em;
+  display: inline-block;
 }
