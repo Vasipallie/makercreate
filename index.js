@@ -550,6 +550,85 @@
         console.log(prjdata[0]);
         res.render('project', { project: prjdata[0]});
     });
+    app.post('/cdn', upload.single('file'), async (req, res) => {
+        const data = await dashauth(req, res);
+        if (!data) return;
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+        const formData = new FormData();
+        const blob = new Blob([req.file.buffer], { type: req.file.mimetype });
+        formData.append('file', blob, req.file.originalname);
+        try {
+            const response = await fetch('https://cdn.hackclub.com/api/v4/upload', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HCDN}` },
+                body: formData
+            });
+            const json = await response.json();
+            if (!response.ok) {
+                throw new Error(json.error || 'CDN upload failed');
+            }
+            res.render('cdn', { cdnlink: json.url, name: data.fname, pfp: data.pfp, log: data.log });
+        } catch (error) {
+            console.error('CDN upload error:', error);
+            res.status(500).json({ error: 'CDN upload failed' });
+        }
+    });
+    app.get('/cdn', async (req, res) => {
+        const data = await dashauth(req, res);
+        if (!data) return;
+        res.render('cdn', { cdnlink: null, name: data.fname, pfp: data.pfp, log: data.log });
+    })
+    app.get('/edit/:id', async (req, res) => {
+        const infodata = await dashauth(req, res);
+        if (!infodata) return;
+        const projectId = req.params.id;
+        const slackcheck = await base('Projects').select({
+            filterByFormula: `{ProjectID} = "${projectId}"`,
+            maxRecords: 1
+        }).firstPage();
+        if (slackcheck.length === 0) {
+            return res.status(404).redirect('/error/Project not found');
+        }
+        if (slackcheck[0].get('SlackId') !== infodata.slackId) {
+            return res.status(403).redirect('/error/You are not authorized to edit this project');
+        }
+        res.render('edit', { project: slackcheck[0] });
+    });
+    app.post('/project/:id/edit', async (req, res) => {
+        const infodata = await dashauth(req, res);
+        if (!infodata) {
+            return;
+        }
+        const projectId = req.params.id;
+        const slackcheck = await base('Projects').select({
+            filterByFormula: `{ProjectID} = "${projectId}"`,
+            maxRecords: 1
+        }).firstPage();
+        if (slackcheck.length === 0) {
+            return res.status(404).redirect('/error/Project not found');
+        }
+        if (slackcheck[0].get('SlackId') !== infodata.slackId) {
+            return res.status(403).redirect('/error/You are not authorized to edit this project');
+        }
+        const { Name, Description, Category, Github, Demo, Image } = req.body;
+        try {
+            await base('Projects').update(slackcheck[0].id, {
+                'Name': Name,
+                'Description': Description,
+                'Category': Category,
+                'Github': Github || '',
+                'Demo': Demo || '',
+                'Image': Image || ''
+            });
+            return res.redirect(`/project/${projectId}`);
+        }
+        catch (err) {
+            console.error('Airtable update error:', err.message, err.statusCode ?? '');
+            return res.status(500).redirect('/error/Unable to update project');
+        }
+    });
     app.delete('/deleteprj/:id', async (req, res) => {
         const infodata= await dashauth(req, res);
         if (!infodata) {
