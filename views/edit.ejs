@@ -15,7 +15,7 @@
       <input class="fieldinput" type="text" id="Name" name="Name"
         value="<%= locals.project.get('Name') || '' %>" required>
 
-      <label class="fieldlabel" for="Image">Image URL</label>
+      <label class="fieldlabel" for="Image">Image URL (get from hackclub-cdn)</label>
       <input class="fieldinput" type="url" id="Image" name="Image"
         value="<%= locals.project.get('Image') || '' %>">
 
@@ -43,6 +43,17 @@
       <label class="fieldlabel" for="Demo">Demo URL</label>
       <input class="fieldinput" type="url" id="Demo" name="Demo"
         value="<%= locals.project.get('Demo') || '' %>">
+
+      <label class="fieldlabel" for="Hackatime">Hackatime Project</label>
+      <select class="fieldinput" id="Hackatime" name="Hackatime">
+        <option value="" disabled>None</option>
+
+        <% hackatimeDatae.projects.forEach(function(project) { %>
+          <option value="<%= project.name %>">
+            <%= project.name %> (<%= (project.total_seconds / 3600).toFixed(1) %> hrs)
+          </option>
+        <% }) %>
+      </select>
 
       <div class="tags" style="margin-top:0.5em;">
         <button type="submit" class="prjbtn">Save Changes</button>

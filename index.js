@@ -583,18 +583,35 @@
     app.get('/edit/:id', async (req, res) => {
         const infodata = await dashauth(req, res);
         if (!infodata) return;
-        const projectId = req.params.id;
-        const slackcheck = await base('Projects').select({
-            filterByFormula: `{ProjectID} = "${projectId}"`,
+        const projectID = req.params.id;
+        const slackcheck = await base('Users').select({
+            filterByFormula: `{SlackId} = "${infodata.slackId}"`,
             maxRecords: 1
         }).firstPage();
         if (slackcheck.length === 0) {
+            return res.status(404).redirect('/error/User not found');
+        }
+        const project = await base('Projects').select({
+            filterByFormula: `{ProjectID} = "${projectID}"`,
+            maxRecords: 1
+        }).firstPage();
+        if (project.length === 0) {
             return res.status(404).redirect('/error/Project not found');
         }
-        if (slackcheck[0].get('SlackId') !== infodata.slackId) {
+        if (project[0].get('SlackId') !== infodata.slackId) {
             return res.status(403).redirect('/error/You are not authorized to edit this project');
         }
-        res.render('edit', { project: slackcheck[0] });
+        const hacktoken = slackcheck[0].get('HackatimeToken');
+        if (!hacktoken) {
+            return res.status(403).redirect('/error/You need to link your Hackatime account to edit this project');
+        }
+        const hackatimeProjects = await fetch('https://hackatime.hackclub.com/api/v1/authenticated/projects', {
+            headers: {
+                'Authorization': `Bearer ${hacktoken}`
+            }
+        });
+        const hackatimeDatae = await hackatimeProjects.json();
+        res.render('edit', { project: project[0], hackatimeDatae });
     });
     app.post('/project/:id/edit', async (req, res) => {
         const infodata = await dashauth(req, res);
@@ -612,15 +629,16 @@
         if (slackcheck[0].get('SlackId') !== infodata.slackId) {
             return res.status(403).redirect('/error/You are not authorized to edit this project');
         }
-        const { Name, Description, Category, Github, Demo, Image } = req.body;
+        const { Name, Description, Category, Github, Demo, Image, Hackatime } = req.body;
         try {
-            await base('Projects').update(slackcheck[0].id, {
+            const result = await base('Projects').update(slackcheck[0].id, {
                 'Name': Name,
                 'Description': Description,
                 'Category': Category,
                 'Github': Github || '',
                 'Demo': Demo || '',
-                'Image': Image || ''
+                'Image': Image || '',
+                'Hackatime': Hackatime || ''
             });
             return res.redirect(`/project/${projectId}`);
         }
