@@ -1,0 +1,21 @@
+<%- include('partials/head', { title: 'Dashboard', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
+<style>
+    
+.linkse{
+  color: #b1d88c;
+  
+}
+</style>
+<h1>./Hackclub CDN</h1>
+<p>HackClub CDN can help you generate viewable links for your projects.</p>
+<form method="POST" action="/cdn" enctype="multipart/form-data">
+    <input type="file" name="file" id="file" accept="image/*,video/*,audio/*,.zip,.tar,.gz,.7z,.rar,.pdf,.docx,.xlsx,.pptx,.txt,.csv,.json,.xml,.html,.css,.js">
+    <button type="submit" class="aabtn">Upload</button>
+</form>
+
+<div>
+    <% if (locals.cdnlink) { %>
+        <p>CDN Link: <a href="<%= locals.cdnlink %>" class="linkse" target="_blank"><%= locals.cdnlink %></a></p>
+    <% } %>
+</div>
+<%- include('partials/foot') %>

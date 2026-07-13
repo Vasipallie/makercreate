@@ -1,0 +1,24 @@
+<%- include('partials/head', { title: 'Dashboard', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
+
+<h1>./Create Project</h1>
+<form method="POST" action="/createprj" class="form" enctype="multipart/form-data">
+    <label for="image">Project Image</label>
+    <input type="file" name="image" id="image" accept="image/*">
+    <input type="text" name="slackId" id="slackId" value="<%= locals.slackId %>" hidden required>
+    <label for="name">Project Name*</label>
+    <input type="text" name="name" id="name" placeholder="Photobooth" required>
+    <label for="description">Project Description*</label>
+    <textarea name="description" id="description" placeholder="This is an 80's inspired photobooth made entirely by hand" required></textarea>
+    <label for="category">Project Category*</label>
+    <input type="radio" name="category" id="Software" value="Software" required hidden>
+    <label class="radio-btn" for="Software">Software</label>
+
+    <input type="radio" name="category" id="Hardware" value="Hardware" required hidden>
+        <label class="radio-btn" for="Hardware">Hardware</label>
+    </input>
+    <button class="aabtn" type="submit">Create Project</button>
+</form>
+<script>
+
+</script>
+<%- include('partials/foot') %>

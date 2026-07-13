@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= locals.title || "MakerCreate" %> - MakerCreate</title>
+    <link rel="stylesheet" href="/css/project.css">
+  </head>
+  <body class="App App-header crt">
+    <div class="imghold">
+      <div class="buttonhold"></div>
+      <a href="/dashboard" class="prjbtn">← Dashboard</a>
+      <a href="/edit/<%= locals.project.get('ProjectID') %>" class="prjbtn">Edit Project</a>
+
+      <img class="prjimg" src="<%= locals.project.get('Image') %>" alt="<%= locals.project.get('Name') %> Image">
+    </div>
+    <div class="prjinfo">
+      <div class="tags">
+        <tag><%= locals.project.get('Category') || "Uncategorized" %></tag>
+        <tag><%= locals.project.get('Status') || "Unknown" %></tag>
+      </div>
+      <h1 class="prjname"><%= locals.project.get('Name') || "Untitled Project" %></h1>
+      <p class="prjdesc"><%= locals.project.get('Description') || "No description available." %></p>
+      <div class="tags">
+        <% if (locals.project.get('Github')) { %>
+          <a class="prjbtn" href="<%= locals.project.get('Github') %>" target="_blank">GitHub</a>
+        <% } %>
+        <% if (locals.project.get('Demo')) { %>
+          <a class="prjbtn" href="<%= locals.project.get('Demo') %>" target="_blank">Demo</a>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>
