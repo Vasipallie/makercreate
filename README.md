@@ -18,6 +18,15 @@ This is the website for MakerCreate, an upcoming HackClub ysws where you make CA
 - `npm run build` to create a production build
 - `npm test` to run the test runner
 
+## Initialisation and Setup
+
+To setup MakerCreate you need to obtain the API Keys and env variables as found in `.example.env` 
+- HackClub auth (auth.hackclub.com)
+- Hackatime integration (hackatime.hackclub.com)
+- AirTable (airtable.com)
+- Slack bot token (slack.com)
+
+
 ## Project Notes
 
 - The homepage includes an STL viewer powered by `three` and `@react-three/fiber`.
