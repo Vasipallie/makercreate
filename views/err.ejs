@@ -47,40 +47,6 @@
   line-height: 1.3;
 }
 
-.crt {
-  position: relative;
-  overflow: auto;
-}
-
-.crt::before {
-  content: " ";
-  position: absolute;
-  display: block;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(37, 33, 33, 0) 50%, rgba(37, 37, 37, 0.12) 50%),
-    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-  background-size: 100% 6px, 8px 100%;
-  animation: crt-scanline-down 1.67s linear infinite;
-}
-
-@keyframes crt-scanline-down {
-  from { background-position: 0 0, 0 0; }
-  to   { background-position: 0 24px, 0 0; }
-}
-
-.crt::after {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: rgba(18, 16, 16, 0.1);
-  opacity: 0;
-  z-index: 2;
-  pointer-events: none;
-}
 .orphy{
   width: 10em;
   height: auto;
@@ -105,7 +71,7 @@ button:hover{
 
     </style>
   </head>
-  <body id="Eyp" class="App App-header crt">
+  <body id="Eyp" class="App App-header">
     <img src="/resources/orphy.svg" alt="MakerCreate" class="orphy" color="#ffffff">
     <h1>./Error</h1>
     <p>Orphy detected an error at this location.</p>

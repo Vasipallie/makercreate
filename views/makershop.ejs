@@ -1,15 +1,32 @@
 <%- include('partials/ShopHead') %>
-<div class="nav">
-    <img src="/resources/shop.png" height="80%" width="auto">
-    <div>
-        <div class="location">
-            <p>Deliver to</p>
-            <div>
-                <img src="/resources/location.png" height="20px">
-                <span id="hcaddress">{authorise address}</span>
+<div class="navtec">
+    <div class="nav">
+        <a height="80%" href="/dashboard" class="navitem" title="Return to Dashboard">
+            <img src="/resources/shop.png" height="80%" width="auto">
+        </a>
+        <div class="info-stack">
+            <div class="right">
+                <div class="location">
+                    <p class="helm">Deliver to</p>
+                    <div>
+                        <img src="/resources/location.png" height="20px">
+                        <span id="hcaddress">{authorise address}</span>
+                    </div>
+                </div>
+                <div class="location">
+                    <p class="helm">Your Balance</p>
+                    <div>
+                        <img src="/resources/log.png" height="20px">
+                        <span id="hcaddress"><%= locals.log || 0 %> logs</span>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </div><!-- 
+    <div class="shopnotif" style="background: ;">
+        <p>Shop Notification: THIS IS CRAMMED</p>
+    </div> -->
+    
 </div>
     
 </body>

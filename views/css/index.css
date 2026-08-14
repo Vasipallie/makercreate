@@ -130,10 +130,6 @@ a:hover{
   gap: 1rem;
   margin-bottom: 0;
 }
-.crt {
-  position: relative;
-  overflow: auto;
-}
 html,body{
   background-color: #0C0C0C;
 }
@@ -141,40 +137,6 @@ html,body{
   font-family: "Questrial", sans-serif;
   font-weight: 400;
   font-style: normal;
-}
-.crt::before{
-  content: " ";
-  position:absolute;
-  display:block;
-  inset: 0;
-  z-index:2;
-  pointer-events:none;
-  background-image: linear-gradient(rgba(37, 33, 33, 0) 50%, rgba(37, 37, 37, 0.12) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-  background-size: 100% 6px, 8px 100%;
-  animation: crt-scanline-down 1.67s linear infinite;
-}
-
-@keyframes crt-scanline-down {
-  from {
-    background-position: 0 0, 0 0;
-  }
-  to {
-    background-position: 0 24px, 0 0;
-  }
-}
-
-.crt::after {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: rgba(18, 16, 16, 0.1);
-  opacity: 0;
-  z-index: 2;
-  pointer-events: none;
 }
 
 .App-link {
