@@ -388,7 +388,9 @@
         });
     });
     app.get('/makershop', async (req, res)=>{
-        res.render('makershop', {linked: false});
+        const data = await dashauth(req, res);
+        console.log(data);
+        res.render('makershop', {linked: false, log: data.log});
     })
     app.get('/hackatimeauth', async (req,res)=>{
         const session = getSession(req);

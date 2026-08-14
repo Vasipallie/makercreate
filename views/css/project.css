@@ -41,26 +41,6 @@ p {
 ::-webkit-scrollbar-thumb { background: #9b9b9b; }
 ::-webkit-scrollbar-thumb:hover { background: #ffffff; }
 
-.crt { position: relative; }
-
-.crt::before {
-  content: " ";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(37, 33, 33, 0) 50%, rgba(37, 37, 37, 0.041) 50%),
-    linear-gradient(90deg, rgba(255, 0, 0, 0.007), rgba(0, 255, 0, 0.007), rgba(166, 255, 0, 0.007));
-  background-size: 100% 6px, 8px 100%;
-  animation: crt-scanline-down 1.67s linear infinite;
-}
-
-@keyframes crt-scanline-down {
-  from { background-position: 0 0, 0 0; }
-  to { background-position: 0 24px, 0 0; }
-}
-
 .imghold {
   width: 100%;
   max-width: 500px;

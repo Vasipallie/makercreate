@@ -6,7 +6,7 @@
     <title>Edit <%= locals.project.get('Name') || "Project" %> - MakerCreate</title>
     <link rel="stylesheet" href="/css/project.css">
   </head>
-  <body class="App App-header crt">
+  <body class="App App-header">
     <a href="/project/<%= locals.project.get('ProjectID') %>" class="prjbtn" style="align-self:flex-start;">← Back to Project</a>
 
     <form class="prjinfo" method="POST" action="/project/<%= locals.project.get('ProjectID') %>/edit" style="width:100%; max-width:500px;">

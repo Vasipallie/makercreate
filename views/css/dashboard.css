@@ -49,41 +49,6 @@ html, body {
   color: D9D5C8;
 }
 
-.crt {
-  position: relative;
-  overflow: hidden;
-}
-
-.crt::before {
-  content: " ";
-  position: absolute;
-  display: block;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(37, 33, 33, 0) 50%, rgba(37, 37, 37, 0.041) 50%),
-    linear-gradient(90deg, rgba(255, 0, 0, 0.007), rgba(0, 255, 0, 0.007), rgba(166, 255, 0, 0.007));
-  background-size: 100% 6px, 8px 100%;
-  animation: crt-scanline-down 1.67s linear infinite;
-}
-
-@keyframes crt-scanline-down {
-  from { background-position: 0 0, 0 0; }
-  to   { background-position: 0 24px, 0 0; }
-}
-
-.crt::after {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: rgba(18, 16, 16, 0.034);
-  opacity: 0;
-  z-index: 2;
-  pointer-events: none;
-}
-
 .nav {
   display: flex;
   flex-direction: column;
@@ -371,13 +336,14 @@ p{
   color:#000000;
 }
 .titlep{
-  font-size:1.1em;
-  line-height:1.5em;
+  font-size:0.5em;
+  line-height:1.15em;
   margin:0;
   padding:0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display:block;
 }
 .descp{
   font-size:0.6em;
