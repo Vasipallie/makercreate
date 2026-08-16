@@ -2,6 +2,7 @@
     import express from 'express';
     import multer from 'multer';
     import cookieParser from 'cookie-parser';
+    import jwt from 'jsonwebtoken';
     import { dirname } from 'path';
     import { randomUUID } from 'crypto';
     import { fileURLToPath } from 'url';
@@ -198,7 +199,7 @@
     const isProduction = process.env.NODE_ENV === 'production';
     const RedirectUri = process.env.HACKCLUB_AUTH_REDIRECT_URI || `http://localhost:${PORT}/authenticate`;
     const HackatimeRedirectUri = process.env.HAKTIME_AUTH_REDIRECT_URI;
-    const authSessions = new Map();
+    const JWT_SECRET = process.env.JWT_SECRET || process.env.HCA_SID || 'fallback-makercreate-secret-2024';
     function getHackatimeConfig(req) {
         return {
             uid: HaktimeUID,
@@ -217,8 +218,9 @@
     }
 
 // Authentication and sesh mgmt
-    function setSessionCookie(res, sessionId) {
-        res.cookie(sessionCookieName, sessionId, {
+    function setSessionCookie(res, sessionData) {
+        const token = jwt.sign(sessionData, JWT_SECRET, { expiresIn: '30d' });
+        res.cookie(sessionCookieName, token, {
             httpOnly: true,
             sameSite: 'lax',
             secure: isProduction,
@@ -233,11 +235,15 @@
         });
     }
     function getSession(req) {
-        const sessionId = req.cookies[sessionCookieName];
-        if (!sessionId) {
+        const token = req.cookies[sessionCookieName];
+        if (!token) {
             return null;
         }
-        return authSessions.get(sessionId) || null;
+        try {
+            return jwt.verify(token, JWT_SECRET);
+        } catch (error) {
+            return null;
+        }
     }
     function getCdnUploadIdFromUrl(url) {
         if (typeof url !== 'string' || !url.trim()) {
@@ -299,6 +305,7 @@
             return false;
         }
     }
+    const userCreationLocks = new Set();
     async function userdbs(identity){
         const info = identity?.identity || {};
         const fname = info.first_name || 'UnRetrievable';
@@ -307,23 +314,36 @@
         if (email === 'UnRetrievable' || slackId === 'UnRetrievable' || fname === 'UnRetrievable' ) {
             return false;
         }
+        
+        // Prevent race conditions (e.g. from double-clicking login or browser pre-fetching)
+        if (userCreationLocks.has(slackId)) {
+            return true; // Already being created by another concurrent request
+        }
+        userCreationLocks.add(slackId);
+
         try {
             const existing = await base('Users').select({
                 filterByFormula: `{SlackId} = "${slackId}"`,
                 maxRecords: 1
             }).firstPage();
+            
             if (existing.length > 0) {
+                userCreationLocks.delete(slackId);
                 return true;
             }
+            
             await base('Users').create({
                 SlackId: slackId,
                 Name: fname,
                 Email: email,
                 logs: 0
             });
+            
+            userCreationLocks.delete(slackId);
             return true;
 
         } catch (err) {
+            userCreationLocks.delete(slackId);
             console.error('Airtable Users error:', err.message, err.statusCode ?? '');
             throw err;
         }
@@ -350,13 +370,12 @@
             const redirectUri = RedirectUri || `${protocol}://${req.get('host')}/authenticate`;
             const token = await eC4T(code, redirectUri);
             const identity = await fetchIdenti(token.access_token);
-            const sessionId = randomUUID();
-            authSessions.set(sessionId, {
+            const sessionData = {
                 token,
                 identity,
                 createdAt: Date.now(),
-            });
-            setSessionCookie(res, sessionId);
+            };
+            setSessionCookie(res, sessionData);
             const userCreated = await userdbs(identity);
             if (!userCreated) {
                 return res.redirect('/error/Unable to register user in database');
@@ -463,9 +482,8 @@
 
     });
     app.get('/logout', (req,res) => {
-        const sessionId = req.cookies[sessionCookieName];
-        if (sessionId) {
-            authSessions.delete(sessionId);
+        const token = req.cookies[sessionCookieName];
+        if (token) {
             clearSessionCookie(res);
         }
         res.redirect('/');
