@@ -1,0 +1,392 @@
+@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
+
+.App-header {
+  font-family: "Questrial", sans-serif;
+  background-color: #0C0C0C;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: calc(10px + 2vmin);
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  color: white;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.topbar{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.logo{
+  width: clamp(72px, 10vw, 132px);
+  height: auto;
+  object-fit: contain;
+  margin-left:-1rem;
+}
+.vmodelx{
+  display: flex;
+  justify-content:flex-end;
+}
+.App-header h1 {
+  margin: 0;
+  line-height: 0.9;
+  font-size: clamp(3rem, 10vw, 7rem);
+  letter-spacing: -0.04em;
+}
+
+.App-header p {
+  margin: 0.4rem 0 0;
+  line-height: 1.3;
+}
+.subtitle{
+  display: block;
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  margin: 0.35rem 0 1rem;
+  line-height: 1.4;
+}
+.App-header h2 {
+  font-size: clamp(1.35rem, 3vw, 2.2rem);
+  line-height: 1.15;
+  margin: 1.75rem 0 0.75rem;
+  letter-spacing: -0.02em;
+}
+.App-header p,
+.rules li,
+.console-body p {
+  font-size: clamp(0.98rem, 1.5vw, 1.15rem);
+  line-height: 1.65;
+  max-width: 70ch;
+}
+
+.App-header p.windo {
+  font-size: 2.5rem;
+  line-height: 1.1;
+}
+
+.faq{
+  max-width: 900px;
+  margin: 1.25rem auto;
+}
+.faq-item{
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding: 0.25rem 0;
+}
+.faq-question{
+  width:100%;
+  text-align:left;
+  background:transparent;
+  border:none;
+  color:inherit;
+  padding:0.75rem 0;
+  font-weight:700;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+}
+.faq-question:focus{
+  outline: 2px solid rgba(0,255,150,0.12);
+  outline-offset: 4px;
+  border-radius:4px;
+}
+.faq-answer{ 
+  padding:0.25rem 0 1rem 0;
+  color: #dfe;
+}
+.faq-answer p{ 
+  margin:0;
+  line-height:1.6;
+}
+.faq-icon{
+  font-size:1.1rem;
+  margin-left:1rem;
+}
+
+.navi{
+  background-color: #181818;
+  color: #00FF00;
+  padding: 0.5rem 1rem;
+  font-size: calc(2px + 1.5vmin);
+  text-decoration: none;
+  border-radius: 0.2rem;
+  z-index:99;
+}
+label{
+  color:#00ff88;
+}
+a:hover{
+  background-color: #f1f1f1;
+  color:#000000;
+}
+.navbar{
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0;
+}
+html,body{
+  background-color: #0C0C0C;
+}
+.qfont {
+  font-family: "Questrial", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.vmodels{
+  margin:0;
+  width: 30vw;
+  height: 30vw;
+  display: flex;
+  flex-direction: column;
+}
+.vtitle{
+  font-size: calc(8px + 1vmin);
+  font-weight: 800;
+  padding:0.1rem;
+  font-family: "Questrial", sans-serif;
+  color: #000000;
+  background-color: #ffffff;
+  display:flex;
+  flex-direction: row;
+  width: 100%;
+  box-sizing: border-box;
+}
+.modelholder{
+  display: flex;
+  flex-direction: row;
+  gap: 0.8rem;
+  width: 100%;
+  margin-top: 1rem;
+  justify-content: center;
+}
+.vmodel-x{
+  margin-left: auto;
+}
+
+.Viewer{
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at top, rgba(159, 255, 174, 0.16), transparent 55%), #0f1115;
+}
+
+.Viewer iframe{
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+}
+
+.Viewer canvas{
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.Viewer-empty,
+.Viewer-error{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  text-align: center;
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
+  color: #dfffe5;
+  background: linear-gradient(180deg, rgba(12, 12, 12, 0.35), rgba(12, 12, 12, 0.72));
+}
+
+.Viewer-error{
+  color: #ffb4b4;
+}
+.estarimg{
+  width:30vw;
+  height: auto;
+  margin-left: auto;
+}
+.estar{
+  width: 100%;
+  display: block;
+}
+.orpheus-title{
+  font-family: 'bms', monospace;
+  font-size: calc(8px + 1.5vmin);
+  color: #00FF00;
+  margin: 0.2rem 0 0;
+}
+button{
+  font-family: "Questrial", sans-serif;
+  border: none;
+  font-size: calc(8px + 1.5vmin);
+  border-radius: 0.2rem;
+  padding: 0.5em 1em;
+  font-weight: 700;
+  margin: 1rem auto 0;
+  width: 100%;
+  cursor:pointer;
+  text-align: center;
+}
+.visible{
+  display:block;
+}
+.console-body{
+  font-family:'bms', monospace;
+  background-color: #181818;
+  color: #00FF00;
+  padding: 1rem;
+}
+.console-title{
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f2f2f2;
+  margin: 1rem 0 0.5rem;
+}
+.rules span,
+.vtitle,
+.orpheus-title{
+  letter-spacing: 0.02em;
+}
+.rules span{
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  font-weight: 700;
+}
+.ruleholder{
+  display:flex;
+  flex-direction:row;
+  gap:1rem;
+}
+.rules ul{
+  margin: 0;
+  padding-left: 1.25rem;
+}
+.rules li{
+  margin-bottom: 0.45rem;
+}
+.boottext-title{
+  display:flex;
+  flex-direction: column;
+  padding:1rem;
+}
+.boottext{
+  color: #ffffff;
+  margin: 0.2rem 0 0;
+  display:flex;
+  flex-direction: row;
+  width:40vw;
+}
+.Holding{
+  display:flex;
+  width:100%;
+  flex-direction:row;
+}
+.links{
+  color: #f0f0f0;
+  text-decoration: underline;
+}
+
+.faq{
+  background-color: #222222;
+  color: #00FF00;
+  padding: 0rem 1rem;
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  border-radius: 0.2rem;
+}
+
+/* Added Styles for Footer and Content Centering */
+.centre {
+  display: block;
+  text-align: center;
+  margin: 1rem auto;
+  width: 100%;
+  font-size: 0.95rem;
+  color: #aaaaaa;
+}
+
+.site-footer {
+  margin-top: 4rem;
+  padding: 3rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.footer-content {
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-logo-text {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.footer-heading {
+  font-size: 1.1rem;
+  color: #aaa;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+}
+
+.footer-about {
+  color: #ccc;
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+  max-width: 700px;
+}
+
+.footer-columns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 3rem;
+  width: 100%;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-col h3 {
+  color: #fff;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.footer-col a {
+  color: #aaa;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.footer-col a:hover {
+  color: #fff;
+  background: transparent;
+}

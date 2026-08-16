@@ -1,0 +1,761 @@
+//Imports
+    import express from 'express';
+    import multer from 'multer';
+    import cookieParser from 'cookie-parser';
+    import jwt from 'jsonwebtoken';
+    import { dirname } from 'path';
+    import { randomUUID } from 'crypto';
+    import { fileURLToPath } from 'url';
+    import Airtable from "airtable";
+    import dotenv from 'dotenv';
+    dotenv.config();
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    import path from 'path';
+
+//AIRTABLE INIT
+    Airtable.configure({
+        endpointUrl: 'https://api.airtable.com',
+        apiKey: process.env.AirTableAPIK
+    });
+    const base = Airtable.base(process.env.AirTableBID);
+//MIDDLEWARE
+    const app = express();
+    app.use(express.urlencoded({ extended: true }));
+    app.use(express.json());
+    const upload = multer({ storage: multer.memoryStorage() });
+    app.use(cookieParser());
+    app.use('/models', express.static(path.join(__dirname, 'views', 'resources', 'models')));
+    app.use('/three', express.static(path.join(__dirname, 'node_modules', 'three')));
+    app.use(express.static(path.join(__dirname, 'views')));
+    app.set('view engine', 'ejs');
+
+    //MIDDLEWARE f(x)
+    //sanitise error/:id stuff as its being shown on screen and can be used for XSS attacks
+    function disinfect(string) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        "/": '&#x2F;',
+    };
+    const reg = /[&<>"'/]/ig;
+    return string.replace(reg, (match)=>(map[match]));
+    }
+    //Exchange Code for Token system via HCA
+    async function eC4T(code, redirectUri) {
+        const response = await fetch('https://auth.hackclub.com/oauth/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                
+                client_id: HCA_CID,
+                client_secret: HCA_SID,
+                redirect_uri: redirectUri,
+                code,
+                grant_type: 'authorization_code',
+            }),
+        });
+        const payload = await response.json();
+
+        if (!response.ok) {
+            const message = payload?.error_description || payload?.error || 'Auth Code Xchange Fail';
+            throw new Error(message);
+        }
+        return payload;
+    };
+    // Fetch their identity from access Tkn
+    async function fetchIdenti(accessToken) {
+        const response = await fetch('https://auth.hackclub.com/api/v1/me', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+        const payload = await response.json();
+        if (!response.ok) {
+            const message = payload?.error?.message || payload?.message || 'Unable to fetch Hack Club identity.';
+            throw new Error(message);
+        }
+        return payload
+    }
+    async function xchangecode(code, redirectUri) {
+        const tokenBody = new URLSearchParams({
+            client_id: HaktimeUID,
+            code,
+            redirect_uri: redirectUri,
+            grant_type: 'authorization_code',
+        });
+        if (HaktimeAPIK) {
+            tokenBody.set('client_secret', HaktimeAPIK);
+        }
+        const response = await fetch('https://hackatime.hackclub.com/oauth/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: tokenBody,
+        });
+        const payload = await response.json();
+
+        if (!response.ok) {
+            const message = payload?.error_description || payload?.error || 'Hackatime token exchange failed';
+            const error = new Error(message);
+            error.statusCode = response.status;
+            error.payload = payload;
+            throw error;
+        }
+        return payload;
+    }
+    //Convert humongously large log counts to a readable format like roadblocks (:P)
+    function countfx(num){
+        if (num >= 1000000){
+            return (num / 1000000).toFixed(1) + 'M';
+        } else if (num >= 1000){
+            return (num / 1000).toFixed(1) + 'K';
+        }
+        return num;
+    }
+    async function dashauth(req, res) {
+        const session = getSession(req);
+        if (!session) {
+            res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);
+            return null;
+        }
+        const identity = session.identity?.identity || {};
+        if (identity.verification_status === 'ineligible') {
+            res.redirect('/error/You are not eligible to use the MakerCreate Console.');
+            return null;
+        }
+        let url = 'resources/pfp.jpg';
+        if (identity.slack_id) {
+            try {
+                url = await getPfp(identity.slack_id);
+            } catch {
+                url = 'resources/pfp.jpg';
+            }
+        }
+        let loga = 0;
+        try {
+            const data = await base("Users").select({
+                filterByFormula: `{SlackId} = "${identity.slack_id}"`,
+                maxRecords: 1
+            }).firstPage();
+            const holdval = data[0] || null;
+            if (holdval) {
+                loga = holdval.get('Logs') ?? holdval.get('logs') ?? 0;
+            }
+        } catch (err) {
+            console.error(err.message);
+            res.redirect('/error/Unable to retrieve user logs from database');
+            return;
+        }
+        const logs = countfx(loga ?? 0);
+        return {
+            fname: identity.first_name || 'UnRetrievable',
+            lname: identity.last_name || 'UnRetrievable',
+            email: identity.primary_email || 'UnRetrievable',
+            slackId: identity.slack_id || 'UnRetrievable',
+            verif: identity.verification_status || 'UnRetrievable',
+            pfp: url,
+            log: logs,
+            actuallogs: loga ?? 0
+        }
+    }
+    async function hkcookiechk(slackid){
+        if (!slackid){
+            return false;
+        }
+        try {
+            const existing = await base('Users').select({
+                filterByFormula: `{SlackId} = "${slackid}"`,
+                maxRecords: 1
+            })
+            .firstPage();
+            if (existing.length > 0) {
+                const record = existing[0];
+                const stoken = record.get('HackatimeToken');
+                return !!stoken;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.error('Airtable Hackatime error:', err.message, err.statusCode ?? '');
+            return false;
+        }
+    }
+// Declaring imporantant variables for auth and sesh mgmt
+    const PORT = process.env.PORT || 3000;
+    const HCA_CID = process.env.HCA_CID;
+    const HCDN = process.env.HCDN_APIK;
+    const HCA_SID = process.env.HCA_SID;
+    const HaktimeUID = process.env.HaktimeUID; 
+    const HaktimeAPIK = process.env.HaktimeAPIK;
+    const HCAScope = 'email name verification_status slack_id';
+    const sessionCookieName = 'makercreate_session';
+    const sessionCookieMaxAge = 1000 * 60 * 60 * 24 * 30;
+    const isProduction = process.env.NODE_ENV === 'production';
+    const RedirectUri = process.env.HACKCLUB_AUTH_REDIRECT_URI || `http://localhost:${PORT}/authenticate`;
+    const HackatimeRedirectUri = process.env.HAKTIME_AUTH_REDIRECT_URI;
+    const JWT_SECRET = process.env.JWT_SECRET;
+    function getHackatimeConfig(req) {
+        return {
+            uid: HaktimeUID,
+            apiKey: HaktimeAPIK,
+            redirectUri: HackatimeRedirectUri
+        };
+    }
+
+//SLACK INIT
+    import { WebClient } from "@slack/web-api";
+    const client = new WebClient(process.env.SlackBT);
+    // Get the pfp of a hackclub slack member based on thier registered slack ID
+    async function getPfp(slackID) {
+        const { user } = await client.users.info({ user: slackID });
+        return user.profile.image_512;
+    }
+
+// Authentication and sesh mgmt
+    function setSessionCookie(res, sessionData) {
+        const token = jwt.sign(sessionData, JWT_SECRET, { expiresIn: '30d' });
+        res.cookie(sessionCookieName, token, {
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: isProduction,
+            maxAge: sessionCookieMaxAge,
+        });
+    }
+    function clearSessionCookie(res) {
+        res.clearCookie(sessionCookieName, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: 'lax',
+        });
+    }
+    function getSession(req) {
+        const token = req.cookies[sessionCookieName];
+        if (!token) {
+            return null;
+        }
+        try {
+            return jwt.verify(token, JWT_SECRET);
+        } catch (error) {
+            return null;
+        }
+    }
+    function getCdnUploadIdFromUrl(url) {
+        if (typeof url !== 'string' || !url.trim()) {
+            return null;
+        }
+        try {
+            const parsed = new URL(url);
+            const segments = parsed.pathname.split('/').filter(Boolean);
+            if (segments.length > 0 && (parsed.hostname === 'cdn.hackclub.com' || parsed.hostname.endsWith('.cdn.hackclub.com'))) {
+                return segments[0] || null;
+            }
+        } catch {
+            return null;
+        }
+        return null;
+    }
+    async function uploadFileToCdn(file) {
+        if (!file) {
+            return '';
+        }
+        const formData = new FormData();
+        const blob = new Blob([file.buffer], { type: file.mimetype || 'application/octet-stream' });
+        formData.append('file', blob, file.originalname || 'upload');
+        const response = await fetch('https://cdn.hackclub.com/api/v4/upload', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HCDN}` },
+            body: formData
+        });
+        const json = await response.json();
+        if (!response.ok) {
+            const error = new Error(json.error || 'CDN upload failed');
+            error.statusCode = response.status;
+            error.payload = json;
+            throw error;
+        }
+        return json.url || '';
+    }
+    async function deleteCdnUploadByUrl(url) {
+        const uploadId = getCdnUploadIdFromUrl(url);
+        if (!uploadId || !HCDN) {
+            return false;
+        }
+        try {
+            const response = await fetch(`https://cdn.hackclub.com/api/v4/upload/${uploadId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${HCDN}` }
+            });
+            if (response.status === 404) {
+                return false;
+            }
+            const json = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                console.warn('CDN delete failed for', url, response.status, json.error || '');
+                return false;
+            }
+            return !!json.deleted;
+        } catch (error) {
+            console.warn('Failed to delete old CDN image:', error.message);
+            return false;
+        }
+    }
+    const userCreationLocks = new Set();
+    async function userdbs(identity){
+        const info = identity?.identity || {};
+        const fname = info.first_name || 'UnRetrievable';
+        const email = info.primary_email || 'UnRetrievable';
+        const slackId = info.slack_id || 'UnRetrievable';
+        if (email === 'UnRetrievable' || slackId === 'UnRetrievable' || fname === 'UnRetrievable' ) {
+            return false;
+        }
+        
+        // Prevent race conditions (e.g. from double-clicking login or browser pre-fetching)
+        if (userCreationLocks.has(slackId)) {
+            return true; // Already being created by another concurrent request
+        }
+        userCreationLocks.add(slackId);
+
+        try {
+            const existing = await base('Users').select({
+                filterByFormula: `{SlackId} = "${slackId}"`,
+                maxRecords: 1
+            }).firstPage();
+            
+            if (existing.length > 0) {
+                userCreationLocks.delete(slackId);
+                return true;
+            }
+            
+            await base('Users').create({
+                SlackId: slackId,
+                Name: fname,
+                Email: email,
+                logs: 0
+            });
+            
+            userCreationLocks.delete(slackId);
+            return true;
+
+        } catch (err) {
+            userCreationLocks.delete(slackId);
+            console.error('Airtable Users error:', err.message, err.statusCode ?? '');
+            throw err;
+        }
+    }
+
+// APP ROUTES
+    app.get('/authenticate', async (req, res) => {
+        const {error, code, state} = req.query;
+        if (error) {
+            return res.redirect(`/error/Other Auth ERR:${error}`);
+        }
+        if (!code) {
+            return res.redirect('/error/Auth Code not provided');
+        }
+
+        if (typeof code !== 'string') {
+            return res.redirect('/login');
+        }
+        if (!HCA_CID || !HCA_SID) {
+            return res.redirect('/error/Missing authentication credentials');
+        }
+        try {
+            const protocol = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0].trim();
+            const redirectUri = RedirectUri || `${protocol}://${req.get('host')}/authenticate`;
+            const token = await eC4T(code, redirectUri);
+            const identity = await fetchIdenti(token.access_token);
+            const sessionData = {
+                token,
+                identity,
+                createdAt: Date.now(),
+            };
+            setSessionCookie(res, sessionData);
+            const userCreated = await userdbs(identity);
+            if (!userCreated) {
+                return res.redirect('/error/Unable to register user in database');
+            }
+            const nextPage = typeof state === 'string' && state.startsWith('/') ? state : '/dashboard';
+            return res.redirect(nextPage);
+
+        }catch (error){
+            const message = error instanceof Error ? error.message : String(error);
+            return res.redirect(`/error/Auth Error:${message}`);
+        }
+    });
+    app.get('/', (req, res) => {
+        res.render('index');
+    }
+    );
+    app.get('/dashboard', async (req, res) => {
+        const data = await dashauth(req, res);
+        if (!data) {
+            return;
+        }
+        const projects = await base('Projects').select({
+            filterByFormula: `{SlackId} = "${data.slackId}"`,
+            maxRecords: 100
+        }).firstPage();
+        const projectData = projects.map(project => ({
+            name: project.get('Name'),
+            description: project.get('Description'),
+            category: project.get('Category'),
+            image: project.get('Image'),
+            status: project.get('Status'),
+            ProjectID: project.get('ProjectID'),
+        }));
+        const linked = await hkcookiechk(data.slackId);
+        console.log(projectData);
+        res.render('dashboard', {
+            name: data.fname,
+            email: data.email,
+            slackId: data.slackId,
+            verificationStatus: data.verif,
+            pfp: data.pfp,
+            log: data.log,
+            linked,
+            projects: projectData
+        });
+    });
+    app.get('/makershop', async (req, res)=>{
+        const data = await dashauth(req, res);
+        console.log(data);
+        res.render('makershop', {linked: false, log: data.log});
+    })
+    app.get('/hackatimeauth', async (req,res)=>{
+        const session = getSession(req);
+        if (!session) {
+            return res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);
+        }
+        const nextPage = typeof req.query.next === 'string' && req.query.next.startsWith('/')
+            ? req.query.next
+            : '/dashboard';
+        const config = getHackatimeConfig(req);
+        const authUrl = new URL('https://hackatime.hackclub.com/oauth/authorize');
+        authUrl.searchParams.set('client_id', config.uid);
+        const protocol = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0].trim();
+        const host = req.get('host');
+        const redirectUri = config.redirectUri || `${protocol}://${host}/hackatime`;
+        authUrl.searchParams.set('redirect_uri', redirectUri);
+        authUrl.searchParams.set('response_type', 'code');
+        authUrl.searchParams.set('scope', 'profile read');
+        authUrl.searchParams.set('state', nextPage);
+        res.redirect(authUrl.toString());
+    })
+    app.get('/settings', async (req, res) => {
+        const data = await dashauth(req, res);
+        if (!data) {
+            return;
+        }
+        res.render('settings', {
+            name: data.fname,
+            lname: data.lname,
+            email: data.email,
+            slackId: data.slackId,
+            verificationStatus: data.verif,
+            pfp: data.pfp,
+            ysws: data.verif,
+            log: data.log,
+            actuallogs: data.actuallogs,
+            linked: await hkcookiechk(data.slackId)
+        });
+    });
+    app.get('/login', (req,res) => {
+        const nextPage = typeof req.query.next === 'string' && req.query.next.startsWith('/')
+            ? req.query.next
+            : '/dashboard';
+        const authUrl = new URL('https://auth.hackclub.com/oauth/authorize');
+        authUrl.searchParams.set('client_id', HCA_CID);
+        const protocol = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0].trim();
+        const host = req.get('host');
+        const redirectUri = RedirectUri || `${protocol}://${host}/authenticate`;
+        authUrl.searchParams.set('redirect_uri', redirectUri);
+        authUrl.searchParams.set('response_type', 'code');
+        authUrl.searchParams.set('scope', HCAScope);
+        authUrl.searchParams.set('state', nextPage);
+        res.redirect(authUrl.toString());
+
+    });
+    app.get('/logout', (req,res) => {
+        const token = req.cookies[sessionCookieName];
+        if (token) {
+            clearSessionCookie(res);
+        }
+        res.redirect('/');
+    });
+    app.get('/error/:msg', (req, res) => {
+        res.render('err', { message: disinfect(req.params.msg) });
+    });
+    async function hakcall(req, res) {
+        const code = req.query.code;
+        const nextPage = typeof req.query.state === 'string' && req.query.state.startsWith('/')
+            ? req.query.state
+            : '/dashboard';
+        if (typeof code !== 'string' || !code) {
+            return res.redirect('/error/HTC: Hackatime authorization code not provided');
+        }
+        try{
+            const protocol = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0].trim();
+            const redirectUri = HackatimeRedirectUri || `${protocol}://${req.get('host')}/hackatime`;
+            const token = await xchangecode(code, redirectUri);
+            const accessToken = token.access_token;
+
+            if (!accessToken) {
+                return res.redirect('/error/HTC: Hackatime access token not provided');
+            }
+            const data = await dashauth(req, res);
+            if (!data) {
+                return;
+            }
+
+            const slackId = data.slackId;
+            if (!slackId) {
+                return res.redirect('/error/HTC: Unable to retrieve slack ID for user');
+            }
+            const existing = await base('Users').select({
+                filterByFormula: `{SlackId} = "${slackId}"`,
+                maxRecords: 1
+            }).firstPage();
+
+            if (existing.length > 0) {
+                const record = existing[0];
+                await base('Users').update(record.id, {
+                    'HackatimeToken': accessToken
+                });
+                return res.redirect(nextPage);
+            } else {
+
+                return res.redirect('/error/HTC: Unable to find user in database');
+            }
+        } catch (err) {
+            console.error('Hackatime token exchange err:', err.message, err.statusCode ?? '', err.payload ?? '');
+            return res.redirect('/error/HTC: Hackatime token exchange failed: ' + err.message);
+        }
+    }
+    app.get('/createproject', async (req, res) => {
+        const data = await dashauth(req, res);
+        if (!data) {
+            return;
+        }
+        res.render('createproject', {
+            name: data.fname,
+            email: data.email,
+            slackId: data.slackId,
+            verificationStatus: data.verif,
+            pfp: data.pfp,
+            log: data.log,
+        });
+    });
+    app.post('/createprj', upload.single('image'), async (req,res) =>{
+        const {slackId, name, description, category} = req.body || {};
+        let url = "";
+        if (req.file){
+            const formData = new FormData();
+            const blob = new Blob([req.file.buffer], { type: req.file.mimetype });
+            formData.append('file', blob, req.file.originalname);
+            const response = await fetch('https://cdn.hackclub.com/api/v4/upload', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HCDN}` },
+                body: formData
+            });
+            const json = await response.json();
+            url = json.url;
+            console.log(`Image uploaded to: ${url}`);
+
+        }
+        const record = await base('Projects').create({
+            'Name':name,
+            'Description':description,
+            'Category':category,
+            'Image':url,
+            'SlackId': slackId,
+            'Status':'Draft'
+        });
+        res.redirect('/dashboard');
+    });
+    app.get('/project/:id', async (req, res) => {
+        try {
+            const prjid = req.params.id;
+            const project = await base('Projects').select({
+                filterByFormula: `{ProjectID} = "${prjid}"`,
+                maxRecords:1
+            }).firstPage();
+            if (project.length === 0){
+                return res.status(404).redirect('/error/Project not found');
+            }
+            const sesh = getSession(req);
+            const identity = sesh?.identity?.identity || {};
+            const loggedout = !identity.slack_id;
+            const owner = project[0].get('SlackId') === identity.slack_id;
+            res.render('project', {
+                project: project[0], 
+                owner, 
+                loggedout,
+                slackID: identity.slack_id,
+                email: identity.primary_email 
+            });
+        } catch (error) {
+            console.error('Error fetching project:', error);
+            res.status(500).redirect('/error/Unable to retrieve project data');
+        }
+    });
+    app.post('/cdn', upload.single('file'), async (req, res) => {
+        const data = await dashauth(req, res);
+        if (!data) return;
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+        const formData = new FormData();
+        const blob = new Blob([req.file.buffer], { type: req.file.mimetype });
+        formData.append('file', blob, req.file.originalname);
+        try {
+            const response = await fetch('https://cdn.hackclub.com/api/v4/upload', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HCDN}` },
+                body: formData
+            });
+            const json = await response.json();
+            if (!response.ok) {
+                throw new Error(json.error || 'CDN upload failed');
+            }
+            res.render('cdn', { cdnlink: json.url, name: data.fname, pfp: data.pfp, log: data.log });
+        } catch (error) {
+            console.error('CDN upload error:', error);
+            res.status(500).json({ error: 'CDN upload failed' });
+        }
+    });
+    app.get('/cdn', async (req, res) => {
+        const data = await dashauth(req, res);
+        if (!data) return;
+        res.render('cdn', { cdnlink: null, name: data.fname, pfp: data.pfp, log: data.log });
+    })
+    app.get('/edit/:id', async (req, res) => {
+        const infodata = await dashauth(req, res);
+        if (!infodata) return;
+        const projectID = req.params.id;
+        const slackcheck = await base('Users').select({
+            filterByFormula: `{SlackId} = "${infodata.slackId}"`,
+            maxRecords: 1
+        }).firstPage();
+        if (slackcheck.length === 0) {
+            return res.status(404).redirect('/error/User not found');
+        }
+        const project = await base('Projects').select({
+            filterByFormula: `{ProjectID} = "${projectID}"`,
+            maxRecords: 1
+        }).firstPage();
+        if (project.length === 0) {
+            return res.status(404).redirect('/error/Project not found');
+        }
+        if (project[0].get('SlackId') !== infodata.slackId) {
+            return res.status(403).redirect('/error/You are not authorized to edit this project');
+        }
+        const hacktoken = slackcheck[0].get('HackatimeToken');
+        if (!hacktoken) {
+            return res.status(403).redirect('/error/You need to link your Hackatime account to edit this project');
+        }
+        const hackatimeProjects = await fetch('https://hackatime.hackclub.com/api/v1/authenticated/projects', {
+            headers: {
+                'Authorization': `Bearer ${hacktoken}`
+            }
+        });
+        const hackatimeDatae = await hackatimeProjects.json();
+        res.render('edit', { project: project[0], hackatimeDatae });
+    });
+    app.post('/project/:id/edit', upload.single('Image'), async (req, res) => {
+        const infodata = await dashauth(req, res);
+        if (!infodata) {
+            return;
+        }
+        const projectId = req.params.id;
+        const slackcheck = await base('Projects').select({
+            filterByFormula: `{ProjectID} = "${projectId}"`,
+            maxRecords: 1
+        }).firstPage();
+        if (slackcheck.length === 0) {
+            return res.status(404).redirect('/error/Project not found');
+        }
+        if (slackcheck[0].get('SlackId') !== infodata.slackId) {
+            return res.status(403).redirect('/error/You are not authorized to edit this project');
+        }
+        const { Name, Description, Category, Github, Demo, Hackatime } = req.body;
+        const previousImage = slackcheck[0].get('Image') || '';
+        let finalImage = previousImage;
+
+        try {
+            if (req.file) {
+                finalImage = await uploadFileToCdn(req.file);
+                if (previousImage && previousImage !== finalImage) {
+                    await deleteCdnUploadByUrl(previousImage);
+                }
+            } else if (req.body.RemoveImage === 'true') {
+                if (previousImage) {
+                    await deleteCdnUploadByUrl(previousImage);
+                }
+                finalImage = '';
+            }
+
+            await base('Projects').update(slackcheck[0].id, {
+                'Name': Name,
+                'Description': Description,
+                'Category': Category,
+                'Github': Github || '',
+                'Demo': Demo || '',
+                'Image': finalImage || '',
+                'Hackatime': Hackatime || ''
+            });
+            return res.redirect(`/project/${projectId}`);
+        }
+        catch (err) {
+            console.error('Airtable update error:', err.message, err.statusCode ?? '');
+            return res.status(500).redirect('/error/Unable to update project');
+        }
+    });
+    app.delete('/deleteprj/:id', async (req, res) => {
+        const infodata= await dashauth(req, res);
+        if (!infodata) {
+            return;
+        }
+        const projectId = req.params.id;
+        const slackcheck = await base('Projects').select({
+            filterByFormula: `{ProjectID} = "${projectId}"`,
+            maxRecords: 1
+        }).firstPage();
+        if (slackcheck.length === 0) {
+            return res.status(404).redirect('/error/Project not found');
+        }
+        const project = slackcheck[0];
+        if (project.get('SlackId') !== infodata.slackId) {
+            return res.status(403).redirect('/error/You are not authorized to delete this project');
+        }
+        try{
+            await base('Projects').destroy(project.id);
+            return res.status(200).redirect('/dashboard');
+        }catch(err){
+            return res.status(500).redirect('/error/Unable to delete project');
+        }
+
+    });
+    app.get('/hackatime', hakcall);
+    app.get('/hackatimecallback', hakcall);
+    app.get('*', (req, res) => {
+        res.redirect('/error/Error 404, Page Not Found');
+    });
+
+
+//START SERVER
+    const server = app.listen(PORT, ()=>{
+        console.log(`Server is running on port ${PORT}`);
+        console.log(`Visit http://localhost:${PORT}`);
+    });
+    process.on('SIGINT', () => {
+        server.close(() => process.exit(0));
+    });
+    process.on('SIGTERM', () => {
+        server.close(() => process.exit(0));
+    });

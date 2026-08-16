@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= locals.title || "MakerCreate" %> - MakerCreate</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="icon" href="resources/favicon.ico">
+  </head>
+  <body class="App App-header">
+    <div class="nav">
+      <div class="promoter">
+        <img alt="get slack logs for this" src="resources/promoter.png" class="promoterimg">
+      </div>
+      <div class="dashies">
+        <a class="navitem" href="/dashboard"># dashboard</a>
+        <!-- <a class="navitem" href="/makershop"># makershop™</a> -->
+        <!-- <a class="navitem" href="/leaderboard"># leaderboard</a> -->
+         <a class="navitem" href="/cdn"># hackclub-cdn</a>
+        <a class="navitem" href="https://hackclub.enterprise.slack.com/archives/C0AGB5HP066"># makercreate-slack</a>
+        <a class="navitem" href="/settings"># settings</a>
+      </div>
+      
+      <div class="currency">
+        <img src="resources/log.png" alt="" class="logimg">
+        <span class="logcount"><%= (locals.log ?? locals.logs) %> logs</span>
+      </div>
+      <div class="profiledata">
+        <div class="profi">
+          <img src="<%= locals.pfp || 'resources/pfp.jpg' %>" alt="pfp" class="profileimg">
+          <div class="profilt">
+            <span class="pint">Welcome back!</span>
+            <span class="pnam"><%= locals.name || "undefined" %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">

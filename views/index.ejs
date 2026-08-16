@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MakerCreate</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="icon" href="resources/favicon.ico">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/three/build/three.module.js",
+          "three/addons/": "/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body id="Eyp" class="App App-header">
+    <div class="visible">
+      <div class="topbar">
+        <a href="https://hackclub.com" target="_blank" rel="noopener noreferrer"><img src="resources/flag-orpheus-left.svg" alt="HackClub logo" class="logo"></a>
+        <div class="navbar">
+          <a class="navi" href="https://hackclub.enterprise.slack.com/archives/C0AGB5HP066" target="_blank" rel="noopener noreferrer">[S] Slack</a>
+          <a class="navi" href="https://github.com/vasipallie/makercreate" target="_blank" rel="noopener noreferrer">[G] GitHub</a>
+          <a class="navi" href="/login">[L] Login</a>
+        </div>
+      </div>
+      <h1>MakerCreate.</h1>
+      <p class="subtitle">A <label title="You Ship, We (will) Ship">YSWS</label> Program @ HackClub</p>
+      <hr>
+      <div class="modelholder">
+        <div class="vmodels">
+          <div class="Viewer" data-url="/models/ai.stl" data-title="Project 1">
+            <div class="Viewer-empty">This 3D model is currently Unavailable, please contact the website administrator if this persists</div>
+          </div>
+        </div>
+
+        <div class="vmodels">
+          <div class="Viewer" data-url="/models/tain.stl" data-title="Project 2">
+            <div class="Viewer-empty">This 3D model is currently Unavailable, please contact the website administrator if this persists</div>
+          </div>
+        </div>
+
+        <div class="vmodels">
+          <div class="Viewer" data-url="/models/ra.stl" data-title="Project 3">
+            <div class="Viewer-empty">This 3D model is currently Unavailable, please contact the website administrator if this persists</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center"><button id="rsvpBtn">Login to MakerCreate</button></div>
+      <span class="centre">YSWS By Hridhaan with help by Seba</span>
+      <hr>
+      <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+        <h2>What is MakerCreate?</h2>
+        <p>MakerCreate is a YSWS (You Ship, We Ship) program @ HackClub. You spend time making hardware/CAD projects to create a new invention which didn't exist or something exist but has been improved on an approved editor, and we ship you parts or maybe a 3D printer of your own choice! (You can also spend earned logs on our <strong>MakerShop&trade;</strong>)</p>
+
+        <h2>Rules and Guidelines of MakerCreate.</h2>
+        <div class="ruleholder" style="justify-content: center;">
+          <div class="rules" style="text-align: left;">
+            <span>Eligibility Criteria:</span>
+            <ul>
+              <li>You MUST be 13-18 years old.</li>
+              <li>You CANNOT be banned from Hackatime.</li>
+              <li>You MUST be part of HackClub Slack.</li>
+              <li>Your identity MUST be verified via <a href="https://auth.hackclub.com" class="links"  target="_blank" rel="noopener noreferrer">HackClub Auth</a></li>
+            </ul>
+          </div>
+          <div class="rules" style="text-align: left;">
+            <span>Project Guidelines:</span>
+            <ul>
+              <li>You MUST spend at least 1 hour on your project.</li>
+              <li>You MUST use one of our approved CAD software/Hardware platforms.</li>
+              <li>You MUST use our lapse-based journaling system.</li>
+              <li>Upload your project files to printables.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <h2 style="text-align: center;">Frequently Asked Questions</h2>
+
+      <div class="faq" id="faq">
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-title">What is MakerCreate?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer" hidden>
+            <p>MakerCreate is a YSWS (You Ship, We Ship) program @ HackClub. You spend time making hardware/CAD projects to create a new invention which didn't exist or something exist but has been improved on an approved editor, and we ship you parts or maybe a 3D printer of your own choice! (You can also spend earned logs on our <strong>MakerShop&trade;</strong>)</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="faq-title">Is MakerCreate Free?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer" hidden>
+            <p>Absolutely! MakerCreate is a completely free program run by volunteers at HackClub. MakerCreate is a YSWS program funded by HackClub, a US-based 501(c)(3) nonprofit that helps teens get involved with technology.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <footer class="site-footer">
+      <div class="footer-content">
+        <p class="footer-about">Hack Club is a 501(c)(3) nonprofit and network of 100k+ technical high schoolers. We believe
+        you learn best by building, so we're creating community and providing grants so you can make
+        awesome projects. At Hack Club, students aren't just learning - they're <span class="footer-shipping">shipping</span>.</p>
+        <div class="footer-columns">
+          <div class="footer-col">
+            <h3>resources</h3>
+            <a href="https://hackclub.com/slack" target="_blank" rel="noreferrer">join our slack</a>
+            <a href="https://hackatime.hackclub.com" target="_blank" rel="noreferrer">hackatime</a>
+            <a href="https://github.com/vasipallie/makercreate" target="_blank" rel="noreferrer">github</a>
+          </div>
+          <div class="footer-col">
+            <h3>hack club</h3>
+            <a href="https://hackclub.com/philosophy/" target="_blank" rel="noreferrer">philosophy</a>
+            <a href="https://hackclub.com/team/" target="_blank" rel="noreferrer">our team &amp; board</a>
+            <a href="https://hackclub.com/brand/" target="_blank" rel="noreferrer">branding</a>
+            <a href="https://hackclub.com/donate/" target="_blank" rel="noreferrer">donate</a>
+            <a href="https://hackclub.com/privacy-and-terms/" target="_blank" rel="noreferrer">privacy &amp; terms</a>
+          </div>
+        </div>
+      </div>
+      <p class="footer-love">made with <a href="https://hackclub.com/philosophy/" target="_blank" rel="noopener noreferrer"><3</a> by <a href="https://github.com/vasipallie" target="_blank" rel="noopener noreferrer">teens</a> for <a href="https://slack.hackclub.com" target="_blank" rel="noopener noreferrer">teens</a></p>
+    </footer>
+    <script type="module">
+      import * as THREE from 'three';
+      import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+      function rsvp() {
+        window.open('/login', '_blank');
+      }
+      document.getElementById('rsvpBtn').addEventListener('click', rsvp);
+
+      function fitCameraToObject(camera, controls, object, offset = 1.35) {
+        const box = new THREE.Box3().setFromObject(object);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        const maxSize = Math.max(size.x, size.y, size.z);
+        const fitHeightDistance = maxSize / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5)));
+        const fitWidthDistance = fitHeightDistance / camera.aspect;
+        const distance = offset * Math.max(fitHeightDistance, fitWidthDistance);
+
+        camera.near = distance / 100;
+        camera.far = distance * 100;
+        camera.updateProjectionMatrix();
+
+        camera.position.set(center.x + distance, center.y + distance, center.z + distance);
+        camera.lookAt(center);
+        controls.target.copy(center);
+        controls.update();
+      }
+
+      function createViewer(container) {
+        const modelUrl = container.dataset.url;
+        container.innerHTML = '';
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0f1115);
+
+        const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 1000);
+        camera.position.set(0, 0, 6);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(container.clientWidth, container.clientHeight, false);
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        container.appendChild(renderer.domElement);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+        scene.add(ambientLight);
+
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
+        hemiLight.position.set(0, 1, 0);
+        scene.add(hemiLight);
+
+        const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+        keyLight.position.set(3, 4, 5);
+        scene.add(keyLight);
+
+        const fillLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        fillLight.position.set(-3, -1, -2);
+        scene.add(fillLight);
+
+        const backLight = new THREE.DirectionalLight(0xffffff, 0.9);
+        backLight.position.set(-3, 2, -5);
+        scene.add(backLight);
+
+        const rimLight = new THREE.DirectionalLight(0xffffff, 0.6);
+        rimLight.position.set(0, -4, 3);
+        scene.add(rimLight);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.enablePan = false;
+
+        const loader = new STLLoader();
+        loader.load(
+          modelUrl,
+          (geometry) => {
+            geometry.center();
+            geometry.computeVertexNormals();
+
+            const material = new THREE.MeshStandardMaterial({
+              color: 0x43A047,
+              metalness: 0.75,
+              roughness: 0.55,
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.rotation.x = -Math.PI / 2;
+            scene.add(mesh);
+            fitCameraToObject(camera, controls, mesh);
+
+            const animate = () => {
+              controls.update();
+              renderer.render(scene, camera);
+              requestAnimationFrame(animate);
+            };
+
+            animate();
+          },
+          undefined,
+          () => {
+            container.innerHTML = '<div class="Viewer-empty">This 3D model is currently Unavailable, please contact the website administrator if this persists</div>';
+          }
+        );
+
+        window.addEventListener('resize', () => {
+          const width = container.clientWidth;
+          const height = container.clientHeight;
+          if (!width || !height) {
+            return;
+          }
+
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+          renderer.setSize(width, height, false);
+        });
+      }
+
+      document.querySelectorAll('.Viewer[data-url]').forEach(createViewer);
+    </script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          document.querySelectorAll('.faq-question').forEach(function(btn){
+            btn.addEventListener('click', function(){
+              const expanded = btn.getAttribute('aria-expanded') === 'true';
+              btn.setAttribute('aria-expanded', String(!expanded));
+              const answer = btn.nextElementSibling;
+              if(answer){
+                answer.hidden = expanded;
+              }
+              const icon = btn.querySelector('.faq-icon');
+              if(icon) icon.textContent = expanded ? '+' : '−';
+            });
+          });
+        });
+        document.addEventListener('keydown', function(event){
+          if(event.key === "S" || event.key === "s"){
+            window.open('https://hackclub.enterprise.slack.com/archives/C0AGB5HP066', '_blank');
+          } else if(event.key === "L" || event.key === "l") {
+            window.open('/login','_blank');
+          } else if (event.key === "g" || event.key === "G"){
+            window.open('https://github.com/vasipallie/makercreate', '_blank');
+          }
+        })
+        </script>
+  </body>
+</html>

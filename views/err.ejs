@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Error - MakerCreate</title>
+    <style>
+      html,body{
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #000000;
+        display: flex;
+        flex-direction: column;
+      }
+@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
+@font-face {
+  font-family: 'bms';
+  src: url('resources/bms.ttf') format('truetype');
+}
+
+.App-header {
+  font-family: "Questrial", sans-serif;
+  background-color: #0C0C0C;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: calc(10px + 2vmin);
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  color: #D9D5C8;
+  box-sizing: border-box;
+  padding: 1em;
+
+}
+
+.App-header h1 {
+  margin: 0;
+  line-height: 0.9;
+  font-size: clamp(1rem, 10vw, 4rem);
+  letter-spacing: -0.04em;
+}
+
+.App-header p {
+  margin: 0.4rem 0 0;
+  line-height: 1.3;
+}
+
+.orphy{
+  width: 10em;
+  height: auto;
+}
+button{
+  text-decoration: none;
+  border:none;
+  background-color: #1f1f1f;
+  color: #D9D5C8;
+  padding:0.5em 0.8em;
+  font-family: "Questrial", sans-serif;
+  font-size: 0.8em;
+  border:1px #3f3f3f solid;
+  Cursor: pointer;
+  width:fit-content;  
+}
+button:hover{
+  background-color: #001d01;
+  color: #bce0bc;
+}
+
+
+    </style>
+  </head>
+  <body id="Eyp" class="App App-header">
+    <img src="/resources/orphy.svg" alt="MakerCreate" class="orphy" color="#ffffff">
+    <h1>./Error</h1>
+    <p>Orphy detected an error at this location.</p>
+    <p>Details: <%= locals.message || "unknown error" %> </p>
+    <button onclick="back()">Return to last page</button>
+  </body>
+  <script>
+    function back(){
+      window.history.back();
+    }
+  </script>
+</html>

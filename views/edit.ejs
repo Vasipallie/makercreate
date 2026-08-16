@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit <%= locals.project.get('Name') || "Project" %> - MakerCreate</title>
+    <link rel="stylesheet" href="/css/project.css">
+  </head>
+  <body class="App App-header">
+    <a href="/project/<%= locals.project.get('ProjectID') %>" class="prjbtn" style="align-self:flex-start;">← Back to Project</a>
+
+    <form class="prjinfo" method="POST" action="/project/<%= locals.project.get('ProjectID') %>/edit" enctype="multipart/form-data" style="width:100%; max-width:500px;">
+      
+      <div class="image-picker-wrapper">
+        <label class="fieldlabel" for="Image">Project Image</label>
+        <label class="image-picker" for="Image" title="Click to replace the project image">
+          <img class="prjimgi" id="projectImagePreview" src="<%= locals.project.get('Image') || '/images/default_project.png' %>" alt="Project Image">
+          <span class="image-picker-overlay">Click to replace</span>
+        </label>
+        <input class="file-input-hidden" type="file" id="Image" name="Image" accept="image/*">
+      </div>
+      <label class="fieldlabel" for="Name">Name</label>
+      <input class="fieldinput" type="text" id="Name" name="Name"
+        value="<%= locals.project.get('Name') || '' %>" required>
+
+      <div class="tags" style="width:100%;">
+        <div style="flex:1;">
+          <label class="fieldlabel" for="Category">Category</label>
+          <select class="fieldinput" id="Category" name="Category">
+            <% ["Hardware","CAD"].forEach(function(opt) { %>
+              <option value="<%= opt %>" <%= locals.project.get('Category') === opt ? 'selected' : '' %>>
+                <%= opt %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+
+      <label class="fieldlabel" for="Description">Description</label>
+      <textarea class="fieldinput" id="Description" name="Description" rows="5"
+        ><%= locals.project.get('Description') || '' %></textarea>
+
+      <label class="fieldlabel" for="Github">GitHub URL</label>
+      <input class="fieldinput" type="url" id="Github" name="Github"
+        value="<%= locals.project.get('Github') || '' %>">
+
+      <label class="fieldlabel" for="Demo">Demo URL</label>
+      <input class="fieldinput" type="url" id="Demo" name="Demo"
+        value="<%= locals.project.get('Demo') || '' %>">
+
+      <label class="fieldlabel" for="Hackatime">Hackatime Project</label>
+      <select class="fieldinput" id="Hackatime" name="Hackatime">
+        <option value="" disabled>None</option>
+
+        <% hackatimeDatae.projects.forEach(function(project) { %>
+          <option value="<%= project.name %>">
+            <%= project.name %> (<%= (project.total_seconds / 3600).toFixed(1) %> hrs)
+          </option>
+        <% }) %>
+      </select>
+
+      <div class="tags" style="margin-top:0.5em;">
+        <button type="submit" class="prjbtn">Save Changes</button>
+        <a href="/project/<%= locals.project.get('ProjectID') %>" class="prjbtn">Cancel</a>
+      </div>
+    </form>
+
+    
+    <div class="settings-section" style="border-color: #971414;">
+      <span class="settings-section-title">Danger Zone</span>
+      <span class="settings-section-subtitle">These actions affect your ENTIRE Project</span>
+      <div class="btn-row">
+        <button type="button" id="deleteProjectBtn" class="logout abtn" data-project-id="<%= locals.project.get('ProjectID') %>" data-project-name="<%= locals.project.get('Name') %>">Delete Project</button>
+      </div>
+    </div>
+
+    <div id="deleteModal" class="popupper-overlay" hidden>
+      <div class="popupper-card" role="dialog" aria-popupper="true" aria-labelledby="deleteModalTitle" aria-describedby="deleteModalText">
+        <h2 id="deleteModalTitle">Delete Project?</h2>
+        <p id="deleteModalText">
+          This action cannot be undone. This will permanently remove
+          <strong id="deleteProjectName">this project</strong>.
+        </p>
+        <div class="popupper-actions">
+          <button type="button" id="cancelDeleteBtn" class="prjbtn">Cancel</button>
+          <button type="button" id="confirmDeleteBtn" class="logout abtn">Delete Forever</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const imageInput = document.getElementById('Image');
+      const projectImagePreview = document.getElementById('projectImagePreview');
+      const deleteProjectBtn = document.getElementById('deleteProjectBtn');
+      const deleteModal = document.getElementById('deleteModal');
+      const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+      const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+      const deleteProjectName = document.getElementById('deleteProjectName');
+
+      if (imageInput && projectImagePreview) {
+        imageInput.addEventListener('change', function () {
+          const file = this.files && this.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.addEventListener('load', () => {
+            projectImagePreview.src = reader.result;
+          });
+          reader.readAsDataURL(file);
+        });
+      }
+
+      if (deleteProjectBtn) {
+        deleteProjectBtn.addEventListener('click', function () {
+          const projectId = deleteProjectBtn.dataset.projectId;
+          const projectName = deleteProjectBtn.dataset.projectName || 'this project';
+
+          if (!projectId) {
+            window.location.href = '/error/Project not found';
+            return;
+          }
+
+          if (!deleteModal || !confirmDeleteBtn || !deleteProjectName) {
+            return;
+          }
+
+          deleteProjectName.textContent = projectName;
+          confirmDeleteBtn.dataset.projectId = projectId;
+          deleteModal.hidden = false;
+          document.body.style.overflow = 'hidden';
+        });
+      }
+
+      if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', function () {
+          if (!deleteModal) {
+            return;
+          }
+          deleteModal.hidden = true;
+          document.body.style.overflow = '';
+        });
+      }
+
+      if (deleteModal) {
+        deleteModal.addEventListener('click', function (event) {
+          if (event.target === deleteModal) {
+            deleteModal.hidden = true;
+            document.body.style.overflow = '';
+          }
+        });
+      }
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && deleteModal && !deleteModal.hidden) {
+          deleteModal.hidden = true;
+          document.body.style.overflow = '';
+        }
+      });
+
+      if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', async function () {
+          const projectId = confirmDeleteBtn.dataset.projectId;
+          if (!projectId) {
+            window.location.href = '/error/Project not found';
+            return;
+          }
+
+          confirmDeleteBtn.disabled = true;
+          confirmDeleteBtn.textContent = 'Deleting...';
+
+          if (cancelDeleteBtn) {
+            cancelDeleteBtn.disabled = true;
+          }
+
+          try {
+            const response = await fetch('/deleteprj/' + encodeURIComponent(projectId), {
+              method: 'DELETE',
+              headers: {
+                Accept: 'text/html'
+              }
+            });
+
+            if (response.redirected) {
+              window.location.href = response.url;
+              return;
+            }
+
+            if (response.ok) {
+              window.location.href = '/dashboard';
+              return;
+            }
+
+            window.location.href = '/error/Unable to delete project';
+          } catch (err) {
+            window.location.href = '/error/Unable to delete project';
+          } finally {
+            confirmDeleteBtn.disabled = false;
+            confirmDeleteBtn.textContent = 'Delete Forever';
+            if (cancelDeleteBtn) {
+              cancelDeleteBtn.disabled = false;
+            }
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
