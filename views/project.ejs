@@ -9,15 +9,22 @@
   <body class="App App-header">
     <div class="imghold">
       <div class="buttonhold"></div>
-      <a href="/dashboard" class="prjbtn">← Dashboard</a>
-      <a href="/edit/<%= locals.project.get('ProjectID') %>" class="prjbtn">Edit Project</a>
-
+      <% if (loggedout) { %>
+        <a href="/" class="prjbtn">← MakerCreate</a>
+      <% } else { %>
+        <a href="/dashboard" class="prjbtn">← Dashboard</a>
+      <% } %>
+      
+      <% if (locals.owner) { %>
+        <a href="/edit/<%= locals.project.get('ProjectID') %>" class="prjbtn">Edit Project</a>
+      <% } %>
       <img class="prjimg" src="<%= locals.project.get('Image') %>" alt="<%= locals.project.get('Name') %> Image">
     </div>
     <div class="prjinfo">
       <div class="tags">
         <tag><%= locals.project.get('Category') || "Uncategorized" %></tag>
-        <tag><%= locals.project.get('Status') || "Unknown" %></tag>
+        <tag><%= locals.project.get('Status') || "Unknown" %></tag><!-- 
+        <tag><%= locals.project.get('HackHrs') || "Unknown" %></tag> -->
       </div>
       <h1 class="prjname"><%= locals.project.get('Name') || "Untitled Project" %></h1>
       <p class="prjdesc"><%= locals.project.get('Description') || "No description available." %></p>
@@ -29,6 +36,9 @@
           <a class="prjbtn" href="<%= locals.project.get('Demo') %>" target="_blank">Demo</a>
         <% } %>
       </div>
+      <% if(locals.owner) { %>
+        <a class="prjbtn" href="https://makercreate.fillout.com/t/88cDhoJGNQus?prjid=<%= locals.project.get('ProjectID') || '' %>&slackid=<%= locals.slackID || '' %>&projecttype=<%= locals.project.get('Category') || '' %>&email=<%= locals.email || '' %>&htimeprj=<%= locals.project.get('Hackatime') || '' %>&githubrepo=<%= locals.project.get('Github') || '' %>&demovid=<%= locals.project.get('Demo') || '' %>">Submit <%= locals.project.get('Name') || 'Project' %></a>
+      <% } %>
     </div>
   </body>
 </html>

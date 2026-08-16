@@ -239,47 +239,64 @@
         }
         return authSessions.get(sessionId) || null;
     }
-    async function rsvpdbs(identity) {
-        const info = identity?.identity || {};
-        const fname = info.first_name || 'UnRetrievable';
-        const email = info.primary_email || 'UnRetrievable';
-        const slackId = info.slack_id || 'UnRetrievable';
-
-        if (email === 'UnRetrievable' || slackId === 'UnRetrievable' || fname === 'UnRetrievable' ) {
-            return;
+    function getCdnUploadIdFromUrl(url) {
+        if (typeof url !== 'string' || !url.trim()) {
+            return null;
         }
         try {
-            const existing = await base('RSVPs')
-                .select({
-                    filterByFormula: `{SlackId} = "${slackId}"`,
-                    maxRecords: 1
-                })
-                .firstPage();
-
-            if (existing.length > 0) {
-                return;
+            const parsed = new URL(url);
+            const segments = parsed.pathname.split('/').filter(Boolean);
+            if (segments.length > 0 && (parsed.hostname === 'cdn.hackclub.com' || parsed.hostname.endsWith('.cdn.hackclub.com'))) {
+                return segments[0] || null;
             }
-            const records = await base('RSVPs').create([
-                {
-                    fields: {
-                        Name: fname,
-                        Email: email,
-                        SlackID: slackId
-                    }
-                }
-            ]);
-            try{
-                const leadercord = await base('Leaderboard').create({
-                    fields: {
-                        SlackID: slackId,
-                        Hours: 0
-                    }
-                })
-            }catch(err){
-                console.error('Airtable Lleaderboard creation error:', err.message, err.statusCode ?? '');
+        } catch {
+            return null;
+        }
+        return null;
+    }
+    async function uploadFileToCdn(file) {
+        if (!file) {
+            return '';
+        }
+        const formData = new FormData();
+        const blob = new Blob([file.buffer], { type: file.mimetype || 'application/octet-stream' });
+        formData.append('file', blob, file.originalname || 'upload');
+        const response = await fetch('https://cdn.hackclub.com/api/v4/upload', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${HCDN}` },
+            body: formData
+        });
+        const json = await response.json();
+        if (!response.ok) {
+            const error = new Error(json.error || 'CDN upload failed');
+            error.statusCode = response.status;
+            error.payload = json;
+            throw error;
+        }
+        return json.url || '';
+    }
+    async function deleteCdnUploadByUrl(url) {
+        const uploadId = getCdnUploadIdFromUrl(url);
+        if (!uploadId || !HCDN) {
+            return false;
+        }
+        try {
+            const response = await fetch(`https://cdn.hackclub.com/api/v4/upload/${uploadId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${HCDN}` }
+            });
+            if (response.status === 404) {
+                return false;
             }
-        } catch (err) {
-            console.error('Airtable RSVP error:', err.message, err.statusCode ?? '');
+            const json = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                console.warn('CDN delete failed for', url, response.status, json.error || '');
+                return false;
+            }
+            return !!json.deleted;
+        } catch (error) {
+            console.warn('Failed to delete old CDN image:', error.message);
+            return false;
         }
     }
     async function userdbs(identity){
@@ -340,7 +357,6 @@
                 createdAt: Date.now(),
             });
             setSessionCookie(res, sessionId);
-            await rsvpdbs(identity);
             const userCreated = await userdbs(identity);
             if (!userCreated) {
                 return res.redirect('/error/Unable to register user in database');
@@ -372,7 +388,7 @@
             category: project.get('Category'),
             image: project.get('Image'),
             status: project.get('Status'),
-            ProjectID: project.get('ProjectID')
+            ProjectID: project.get('ProjectID'),
         }));
         const linked = await hkcookiechk(data.slackId);
         console.log(projectData);
@@ -545,12 +561,30 @@
         res.redirect('/dashboard');
     });
     app.get('/project/:id', async (req, res) => {
-        const prjdata = await base('Projects').select({
-            filterByFormula: `{ProjectID} = "${req.params.id}"`,
-            maxRecords: 1
-        }).firstPage();
-        console.log(prjdata[0]);
-        res.render('project', { project: prjdata[0]});
+        try {
+            const prjid = req.params.id;
+            const project = await base('Projects').select({
+                filterByFormula: `{ProjectID} = "${prjid}"`,
+                maxRecords:1
+            }).firstPage();
+            if (project.length === 0){
+                return res.status(404).redirect('/error/Project not found');
+            }
+            const sesh = getSession(req);
+            const identity = sesh?.identity?.identity || {};
+            const loggedout = !identity.slack_id;
+            const owner = project[0].get('SlackId') === identity.slack_id;
+            res.render('project', {
+                project: project[0], 
+                owner, 
+                loggedout,
+                slackID: identity.slack_id,
+                email: identity.primary_email 
+            });
+        } catch (error) {
+            console.error('Error fetching project:', error);
+            res.status(500).redirect('/error/Unable to retrieve project data');
+        }
     });
     app.post('/cdn', upload.single('file'), async (req, res) => {
         const data = await dashauth(req, res);
@@ -615,7 +649,7 @@
         const hackatimeDatae = await hackatimeProjects.json();
         res.render('edit', { project: project[0], hackatimeDatae });
     });
-    app.post('/project/:id/edit', async (req, res) => {
+    app.post('/project/:id/edit', upload.single('Image'), async (req, res) => {
         const infodata = await dashauth(req, res);
         if (!infodata) {
             return;
@@ -631,15 +665,30 @@
         if (slackcheck[0].get('SlackId') !== infodata.slackId) {
             return res.status(403).redirect('/error/You are not authorized to edit this project');
         }
-        const { Name, Description, Category, Github, Demo, Image, Hackatime } = req.body;
+        const { Name, Description, Category, Github, Demo, Hackatime } = req.body;
+        const previousImage = slackcheck[0].get('Image') || '';
+        let finalImage = previousImage;
+
         try {
-            const result = await base('Projects').update(slackcheck[0].id, {
+            if (req.file) {
+                finalImage = await uploadFileToCdn(req.file);
+                if (previousImage && previousImage !== finalImage) {
+                    await deleteCdnUploadByUrl(previousImage);
+                }
+            } else if (req.body.RemoveImage === 'true') {
+                if (previousImage) {
+                    await deleteCdnUploadByUrl(previousImage);
+                }
+                finalImage = '';
+            }
+
+            await base('Projects').update(slackcheck[0].id, {
                 'Name': Name,
                 'Description': Description,
                 'Category': Category,
                 'Github': Github || '',
                 'Demo': Demo || '',
-                'Image': Image || '',
+                'Image': finalImage || '',
                 'Hackatime': Hackatime || ''
             });
             return res.redirect(`/project/${projectId}`);

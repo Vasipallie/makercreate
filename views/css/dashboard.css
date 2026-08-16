@@ -46,7 +46,7 @@ html, body {
   font-size: clamp(1rem, 1.8vw, 1.35rem);
   margin: 0;
   line-height: 1.4;
-  color: D9D5C8;
+  color: #D9D5C8;
 }
 
 .nav {
