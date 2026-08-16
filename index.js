@@ -388,7 +388,7 @@
             category: project.get('Category'),
             image: project.get('Image'),
             status: project.get('Status'),
-            ProjectID: project.get('ProjectID')
+            ProjectID: project.get('ProjectID'),
         }));
         const linked = await hkcookiechk(data.slackId);
         console.log(projectData);
@@ -574,7 +574,13 @@
             const identity = sesh?.identity?.identity || {};
             const loggedout = !identity.slack_id;
             const owner = project[0].get('SlackId') === identity.slack_id;
-            res.render('project', {project: project[0], owner, loggedout});
+            res.render('project', {
+                project: project[0], 
+                owner, 
+                loggedout,
+                slackID: identity.slack_id,
+                email: identity.primary_email 
+            });
         } catch (error) {
             console.error('Error fetching project:', error);
             res.status(500).redirect('/error/Unable to retrieve project data');
