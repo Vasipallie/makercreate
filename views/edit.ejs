@@ -27,7 +27,7 @@
         <div style="flex:1;">
           <label class="fieldlabel" for="Category">Category</label>
           <select class="fieldinput" id="Category" name="Category">
-            <% ["Software","Hardware","CAD"].forEach(function(opt) { %>
+            <% ["Hardware","CAD"].forEach(function(opt) { %>
               <option value="<%= opt %>" <%= locals.project.get('Category') === opt ? 'selected' : '' %>>
                 <%= opt %>
               </option>
@@ -63,12 +63,39 @@
         <button type="submit" class="prjbtn">Save Changes</button>
         <a href="/project/<%= locals.project.get('ProjectID') %>" class="prjbtn">Cancel</a>
       </div>
-
     </form>
+
+    
+    <div class="settings-section" style="border-color: #971414;">
+      <span class="settings-section-title">Danger Zone</span>
+      <span class="settings-section-subtitle">These actions affect your ENTIRE Project</span>
+      <div class="btn-row">
+        <button type="button" id="deleteProjectBtn" class="logout abtn" data-project-id="<%= locals.project.get('ProjectID') %>" data-project-name="<%= locals.project.get('Name') %>">Delete Project</button>
+      </div>
+    </div>
+
+    <div id="deleteModal" class="popupper-overlay" hidden>
+      <div class="popupper-card" role="dialog" aria-popupper="true" aria-labelledby="deleteModalTitle" aria-describedby="deleteModalText">
+        <h2 id="deleteModalTitle">Delete Project?</h2>
+        <p id="deleteModalText">
+          This action cannot be undone. This will permanently remove
+          <strong id="deleteProjectName">this project</strong>.
+        </p>
+        <div class="popupper-actions">
+          <button type="button" id="cancelDeleteBtn" class="prjbtn">Cancel</button>
+          <button type="button" id="confirmDeleteBtn" class="logout abtn">Delete Forever</button>
+        </div>
+      </div>
+    </div>
 
     <script>
       const imageInput = document.getElementById('Image');
       const projectImagePreview = document.getElementById('projectImagePreview');
+      const deleteProjectBtn = document.getElementById('deleteProjectBtn');
+      const deleteModal = document.getElementById('deleteModal');
+      const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+      const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+      const deleteProjectName = document.getElementById('deleteProjectName');
 
       if (imageInput && projectImagePreview) {
         imageInput.addEventListener('change', function () {
@@ -79,6 +106,99 @@
             projectImagePreview.src = reader.result;
           });
           reader.readAsDataURL(file);
+        });
+      }
+
+      if (deleteProjectBtn) {
+        deleteProjectBtn.addEventListener('click', function () {
+          const projectId = deleteProjectBtn.dataset.projectId;
+          const projectName = deleteProjectBtn.dataset.projectName || 'this project';
+
+          if (!projectId) {
+            window.location.href = '/error/Project not found';
+            return;
+          }
+
+          if (!deleteModal || !confirmDeleteBtn || !deleteProjectName) {
+            return;
+          }
+
+          deleteProjectName.textContent = projectName;
+          confirmDeleteBtn.dataset.projectId = projectId;
+          deleteModal.hidden = false;
+          document.body.style.overflow = 'hidden';
+        });
+      }
+
+      if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', function () {
+          if (!deleteModal) {
+            return;
+          }
+          deleteModal.hidden = true;
+          document.body.style.overflow = '';
+        });
+      }
+
+      if (deleteModal) {
+        deleteModal.addEventListener('click', function (event) {
+          if (event.target === deleteModal) {
+            deleteModal.hidden = true;
+            document.body.style.overflow = '';
+          }
+        });
+      }
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && deleteModal && !deleteModal.hidden) {
+          deleteModal.hidden = true;
+          document.body.style.overflow = '';
+        }
+      });
+
+      if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', async function () {
+          const projectId = confirmDeleteBtn.dataset.projectId;
+          if (!projectId) {
+            window.location.href = '/error/Project not found';
+            return;
+          }
+
+          confirmDeleteBtn.disabled = true;
+          confirmDeleteBtn.textContent = 'Deleting...';
+
+          if (cancelDeleteBtn) {
+            cancelDeleteBtn.disabled = true;
+          }
+
+          try {
+            const response = await fetch('/deleteprj/' + encodeURIComponent(projectId), {
+              method: 'DELETE',
+              headers: {
+                Accept: 'text/html'
+              }
+            });
+
+            if (response.redirected) {
+              window.location.href = response.url;
+              return;
+            }
+
+            if (response.ok) {
+              window.location.href = '/dashboard';
+              return;
+            }
+
+            window.location.href = '/error/Unable to delete project';
+          } catch (err) {
+            window.location.href = '/error/Unable to delete project';
+          } finally {
+            confirmDeleteBtn.disabled = false;
+            confirmDeleteBtn.textContent = 'Delete Forever';
+            if (cancelDeleteBtn) {
+              cancelDeleteBtn.disabled = false;
+            }
+          }
         });
       }
     </script>

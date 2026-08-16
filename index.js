@@ -299,49 +299,6 @@
             return false;
         }
     }
-    async function rsvpdbs(identity) {
-        const info = identity?.identity || {};
-        const fname = info.first_name || 'UnRetrievable';
-        const email = info.primary_email || 'UnRetrievable';
-        const slackId = info.slack_id || 'UnRetrievable';
-
-        if (email === 'UnRetrievable' || slackId === 'UnRetrievable' || fname === 'UnRetrievable' ) {
-            return;
-        }
-        try {
-            const existing = await base('RSVPs')
-                .select({
-                    filterByFormula: `{SlackId} = "${slackId}"`,
-                    maxRecords: 1
-                })
-                .firstPage();
-
-            if (existing.length > 0) {
-                return;
-            }
-            const records = await base('RSVPs').create([
-                {
-                    fields: {
-                        Name: fname,
-                        Email: email,
-                        SlackID: slackId
-                    }
-                }
-            ]);
-            try{
-                const leadercord = await base('Leaderboard').create({
-                    fields: {
-                        SlackID: slackId,
-                        Hours: 0
-                    }
-                })
-            }catch(err){
-                console.error('Airtable Lleaderboard creation error:', err.message, err.statusCode ?? '');
-            }
-        } catch (err) {
-            console.error('Airtable RSVP error:', err.message, err.statusCode ?? '');
-        }
-    }
     async function userdbs(identity){
         const info = identity?.identity || {};
         const fname = info.first_name || 'UnRetrievable';
@@ -400,7 +357,6 @@
                 createdAt: Date.now(),
             });
             setSessionCookie(res, sessionId);
-            await rsvpdbs(identity);
             const userCreated = await userdbs(identity);
             if (!userCreated) {
                 return res.redirect('/error/Unable to register user in database');

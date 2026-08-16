@@ -211,3 +211,76 @@ button.prjbtn {
   white-space: nowrap;
   border: 0;
 }
+
+  .settings-section {
+    display: flex;
+    flex-direction: column;
+    padding: 0.6em 0.7em;
+    border: 2px solid #A5A7A5;
+    margin-bottom: 0.5em;
+  }
+  
+.logout{
+  text-decoration:none;
+  color:#ffffff;
+  padding-block:0.25em;
+  padding-inline:0.5em;
+  background-color:#971414;
+}
+.logout:hover{
+  color:#ff0000;
+  background-color:#6b0b0b;
+}
+
+.popupper-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.popupper-overlay[hidden] {
+  display: none !important;
+}
+
+.popupper-card {
+  width: min(520px, 100%);
+  border: 2px solid #971414;
+  background: #121212;
+  color: #D9D5C8;
+  padding: 1.1rem;
+  box-sizing: border-box;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+}
+
+.popupper-card h2 {
+  margin: 0 0 0.5rem;
+  color: #ffffff;
+  font-size: clamp(1rem, 2.4vw, 1.35rem);
+  letter-spacing: 0.02em;
+}
+
+.popupper-card p {
+  margin: 0;
+  line-height: 1.4;
+  font-size: 0.9em;
+}
+
+.popupper-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+.abtn{
+  all: unset;
+  text-decoration:none;
+  color:#ffffff;
+  padding-block:0.25em;
+  padding-inline:0.5em;
+  background-color:#971414;
+}
