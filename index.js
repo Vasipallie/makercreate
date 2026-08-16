@@ -199,7 +199,7 @@
     const isProduction = process.env.NODE_ENV === 'production';
     const RedirectUri = process.env.HACKCLUB_AUTH_REDIRECT_URI || `http://localhost:${PORT}/authenticate`;
     const HackatimeRedirectUri = process.env.HAKTIME_AUTH_REDIRECT_URI;
-    const JWT_SECRET = process.env.JWT_SECRET || process.env.HCA_SID || 'fallback-makercreate-secret-2024';
+    const JWT_SECRET = process.env.JWT_SECRET;
     function getHackatimeConfig(req) {
         return {
             uid: HaktimeUID,
