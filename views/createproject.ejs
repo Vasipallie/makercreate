@@ -1,7 +1,7 @@
 <%- include('partials/head', { title: 'Dashboard', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
 
 <h1>./Create Project</h1>
-<form method="POST" action="/createprj" class="form" enctype="multipart/form-data">
+<form method="POST" action="/createprj" class="form" id="createForm" enctype="multipart/form-data">
     <label for="image">Project Image</label>
     <input type="file" name="image" id="image" accept="image/*">
     <input type="text" name="slackId" id="slackId" value="<%= locals.slackId %>" hidden required>
@@ -19,6 +19,10 @@
     <button class="aabtn" type="submit">Create Project</button>
 </form>
 <script>
-
+    document.getElementById('createForm').addEventListener('submit', function() {
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerText = 'Creating...';
+    });
 </script>
 <%- include('partials/foot') %>
