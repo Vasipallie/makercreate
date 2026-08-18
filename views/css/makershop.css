@@ -37,13 +37,13 @@ body {
 .nav {
   display: flex;
   flex-direction: row;
-  height: 3em;
+  height: 3.5em;
   width: 100%;
-  background-color: #131921;
+  background-color: #008A00;
   box-sizing: border-box;
   gap: 0.7em;
-  border-bottom: 2px solid #A6A6A6;
-  padding: 0.2em;
+  border-bottom: none;
+  padding: 0.2em 1em;
   align-items: center;
   margin:0;
 }
@@ -65,8 +65,8 @@ body {
 }
 
 vr{
-  border: 1px solid #A6A6A6;
-  height:100%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  height:80%;
 }
 .location p{
   font-size:0.8em;
@@ -100,8 +100,8 @@ vr{
   height: 100%;
 }
 .navitem:hover{
-  background-color: #3b4238;
-  border-radius: 0.2em;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 0;
 }
 .right{
   margin-left: auto;

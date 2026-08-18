@@ -1,21 +1,28 @@
-<%- include('partials/head', { title: 'Dashboard', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
-<style>
-    
-.linkse{
-  color: #b1d88c;
-  
-}
-</style>
-<h1>./Hackclub CDN</h1>
-<p>HackClub CDN can help you generate viewable links for your projects.</p>
-<form method="POST" action="/cdn" enctype="multipart/form-data">
-    <input type="file" name="file" id="file" accept="image/*,video/*,audio/*,.zip,.tar,.gz,.7z,.rar,.pdf,.docx,.xlsx,.pptx,.txt,.csv,.json,.xml,.html,.css,.js">
-    <button type="submit" class="aabtn">Upload</button>
-</form>
+<%- include('partials/head', { title: 'HackClub CDN', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
 
-<div>
-    <% if (locals.cdnlink) { %>
-        <p>CDN Link: <a href="<%= locals.cdnlink %>" class="linkse" target="_blank"><%= locals.cdnlink %></a></p>
-    <% } %>
+<a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+
+<div class="settings-header">
+  <h1>./Hackclub CDN</h1>
+  <span>HackClub CDN can help you generate viewable links for your projects.</span>
 </div>
+
+<div class="settings-section">
+  <span class="settings-section-title">Upload File</span>
+  <span class="settings-section-subtitle">Select a file to upload to the Hack Club CDN.</span>
+  
+  <form method="POST" action="/cdn" enctype="multipart/form-data" class="form">
+      <input type="file" name="file" id="file" required>
+      <button class="aabtn" type="submit" style="margin-top: 1rem;">Upload File</button>
+  </form>
+</div>
+
+<% if (locals.cdnlink) { %>
+    <div class="settings-section" style="margin-top: 1rem;">
+        <span class="settings-section-title" style="color: #F0A30A;">Upload Successful</span>
+        <span class="settings-section-subtitle">Your file has been uploaded to the CDN.</span>
+        <a class="linkse" href="<%= locals.cdnlink %>" target="_blank"><%= locals.cdnlink %></a>
+    </div>
+<% } %>
+
 <%- include('partials/foot') %>

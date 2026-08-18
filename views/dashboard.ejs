@@ -108,13 +108,16 @@
     
     <script>
         const scrollContainer = document.querySelector('.main');
-        scrollContainer.addEventListener('wheel', (evt) => {
-            // Only intercept if we are scrolling vertically
-            if (evt.deltaY !== 0) {
-                evt.preventDefault();
-                scrollContainer.scrollLeft += evt.deltaY;
-            }
-        }, { passive: false });
+        // Only hijack wheel→horizontal on non-touch devices
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (!isTouch && window.matchMedia('(min-width: 769px)').matches) {
+            scrollContainer.addEventListener('wheel', (evt) => {
+                if (evt.deltaY !== 0) {
+                    evt.preventDefault();
+                    scrollContainer.scrollLeft += evt.deltaY;
+                }
+            }, { passive: false });
+        }
     </script>
 </body>
 </html>

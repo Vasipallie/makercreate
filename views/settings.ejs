@@ -1,72 +1,7 @@
 <%- include('partials/head', { title: 'Settings', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
 
-<style>
-  .settings-header {
-    margin-bottom: 0.6em;
-  }
-  .settings-header h1 {
-    margin: 0;
-    line-height: 0.9;
-    font-size: clamp(1rem, 8vw, 2.8rem);
-    letter-spacing: -0.04em;
-    color: #ffffff;
-  }
-  .settings-header span {
-    display: block;
-    font-size: 0.85em;
-    color: #cccccc;
-    letter-spacing: 0.02em;
-  }
-  .settings-section {
-    display: flex;
-    flex-direction: column;
-    padding: 0.6em 0.7em;
-    border: 2px solid #A5A7A5;
-    margin-bottom: 0.5em;
-  }
 
-  .settings-section-title {
-    font-size: 1.2em;
-    line-height: 1;
-    margin:0;
-    color: #ffffff;
-    font-weight: bold;
-    letter-spacing: 0.02em;
-  }
-  .settings-section-subtitle {
-    display: block;
-    font-size: 0.8em;
-    color: #cccccc;
-    margin-bottom: 0.6em;
-    letter-spacing: 0.01em;
-  }
-  .info-grid {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    row-gap: 0.1em;
-    column-gap: 0.5em;
-    margin-bottom: 0.7em;
-    font-size: 0.88em;
-  }
-  .info-grid .label {
-    color: #dfdfdf;
-    letter-spacing: 0.02em;
-  }
-  .info-grid .value {
-    color: #dfdfdf;
-    font-weight: 500;
-  }
-  .info-grid .value::before {
-    content: ': ';
-    color: #dfdfdf;
-  }
-
-  .btn-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.2em;
-  }
-</style>
+<a href="/dashboard" class="back-btn">← Back to Dashboard</a>
 
 <div class="settings-header">
   <h1>./MakerCreate Settings</h1>
