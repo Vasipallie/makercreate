@@ -1,36 +1,120 @@
-<%- include('partials/head', { title: 'Dashboard', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Makercreate dashboard</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+</head>
+<body>
+    <div class="nav">
+        <div class="nav-lefti">
+            <img src="/resources/logo.png" alt="Makercreate Logo" style="height: clamp(2.5rem, 5vw, 4rem); width: auto; object-fit: contain;">
+        </div>
 
-<h1>./MakerCreate Dashboard</h1>
-
- <% if (locals.linked === false || locals.linked === undefined){ %>
-<div class="linkage">
-    <p class="linkh">Link Hackatime</p>
-    <p>Link hackatime to your MakerCreate account to track your coding activity.</p>
-    <a  href="/hackatimeauth" class="btn">Link Account</a>
-</div>
-<% } %>
-
-<h2>Your Projects</h2>
-<p>These are your makercreate projects</p>
-<div class="projects">
-
-    <% if (locals.projects && locals.projects.length > 0) { %>
-        <% locals.projects.forEach(project => { %>
-            <a class="project" href="/project/<%= project.ProjectID %>" style="background-image: url('<%= project.image || '/resources/promoter.png' %>');">
-                <div class="textareas">
-                    <div class="tags">
-                        <tag style="background-color: #FA6800;"><%= project.category %></tag>
-                        <tag style="background-color: #E51400;"><%= project.status %></tag>
+        <div class="nav-righti">
+            <div class="pfpinfo">
+                <span class="subtitle">Welcome</span>
+                <span class="title"><%= locals.name %></span>
+                <span class="subtitle"><%= (locals.log ?? locals.logs) %> logs</span>
+            </div>
+            <div class="pfp"><img src="<%= locals.pfp || '' %>" alt="pfp"></div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="tile-section">
+            <h2 class="section-title">projects</h2>
+            <div class="tile-grid">
+                <% if (locals.projects && locals.projects.length > 0) { %>
+                    <% const sizes = ['tile-large', 'tile-medium']; %>
+                    <% locals.projects.forEach(project => { %>
+                        <% const randomSize = sizes[Math.floor(Math.random() * sizes.length)]; %>
+                        <a class="tile <%= randomSize %> tile-project" href="/project/<%= project.ProjectID %>">
+                            <div class="tile-bg"><img src="<%= project.image || '/resources/promoter.png' %>" alt="icon"></div>
+                            <div class="tile-info">
+                                <div class="tile-label"><%= project.name || 'Untitled' %></div>
+                                <div class="tile-tags">
+                                    <% if(project.category) { %><tag style="background-color: #FA6800;"><%= project.category %></tag><% } %>
+                                    <% if(project.status) { %><tag style="background-color: #E51400;"><%= project.status %></tag><% } %>
+                                </div>
+                            </div>
+                        </a>
+                    <% }); %>
+                    <% } else { %>
+                    <div class="tile tile-large">
+                        <div class="tile-icon"><i class="fi fi-rr-folder-open" style="font-size: 1.5em; display: block;"></i></div>
+                        <div class="tile-label">No Projects</div>
                     </div>
-                    <h1 class="titlep"><%= project.name %></h1>
-                    <p class="descp"><%= project.description %></p>
-                </div>
-            </a>
-        <% }); %>
-    <% }%>
-    <a class="cprojec project" href="/createproject">
-        <img src="/resources/upload.svg" alt="Add Project" class="addicon">
-        <p>Create a New Project</p>
-    </a>
-</div>
-<%- include('partials/foot') %>
+                <% } %>
+                <a class="tile tile-small" href="/createproject">
+                    <div class="tile-icon"><i class="fi fi-rr-add" style="font-size: 1.5em; display: block;"></i></div>
+                    <div class="tile-label">Create Project</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="tile-section">
+            <h2 class="section-title">general</h2>
+            <div class="tile-grid">
+                <!-- 
+                <a class="tile tile-large" href="/makershop">
+                    <div class="tile-icon"><i class="fi fi-rr-shop" style="font-size: 1.5em; display: block;"></i></div>
+                    <div class="tile-label">MakerShop</div>
+                </a> -->
+                <a class="tile tile-medium" href="/cdn">
+                    <div class="tile-icon"><i class="fi fi-rr-cloud-upload" style="font-size: 1.5em; display: block;"></i></div>
+                    <div class="tile-label">HackClub CDN</div>
+                </a>
+                <a class="tile tile-large" href="/settings">
+                    <div class="tile-icon"><i class="fi fi-rr-settings" style="font-size: 1.5em; display: block;"></i></div>
+                    <div class="tile-label">Settings</div>
+                </a><!-- 
+                <a class="tile tile-small" href="/faq">
+                    <div class="tile-icon"><i class="fi fi-rr-interrogation" style="font-size: 1.5em; display: block;"></i></div>
+                    <div class="tile-label">FAQ</div>
+                </a> -->
+                <a class="tile tile-small" href="https://hackclub.enterprise.slack.com/archives/C0BQF60PM8D">
+                    <div class="tile-icon"><i class="fi fi-rr-interrogation" style="font-size: 1.5em; display: block;"></i></div>
+                    <div class="tile-label">#makercreate-help</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="tile-section">
+            <h2 class="section-title">slack links</h2>
+            <div class="tile-grid">
+                
+                <a class="tile tile-large tile-slack" href="https://hackclub.enterprise.slack.com/archives/C0BQBS7UWQ1">
+                    <div class="tile-icon"><i class="fi fi-rr-megaphone" style="font-size: 1.5em; display: block;"></i></div>
+                    <div class="tile-label">#makercreate-bulletin</div>
+                </a>
+                <a class="tile tile-medium tile-slack" href="https://hackclub.enterprise.slack.com/archives/C0AGB5HP066">
+                    <div class="tile-icon"><img src="/resources/orphy.svg" alt="Orphy" style="width: auto; height: 3.75em; display: block;"></div>
+                    <div class="tile-label">#makercreate</div>
+                </a>
+                <a class="tile tile-large tile-slack" href="https://hackclub.enterprise.slack.com/archives/C0BQF60PM8D">
+                    <div class="tile-icon"><i class="fi fi-rr-interrogation" style="font-size: 1.5em; display: block;"></i></div>
+                    <div class="tile-label">#makercreate-help</div>
+                </a>
+                <a class="tile tile-small tile-slack" href="https://hackclub.enterprise.slack.com/archives/C0BQFFRPC22">
+                    <div class="tile-icon"><i class="fi fi-rr-bug" style="font-size: 1.5em; display: block;"></i></div>
+                    <div class="tile-label">#makercreate-bugfinders</div>
+                </a>
+            </div>
+        </div>
+
+    </div>
+    
+    <script>
+        const scrollContainer = document.querySelector('.main');
+        scrollContainer.addEventListener('wheel', (evt) => {
+            // Only intercept if we are scrolling vertically
+            if (evt.deltaY !== 0) {
+                evt.preventDefault();
+                scrollContainer.scrollLeft += evt.deltaY;
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>

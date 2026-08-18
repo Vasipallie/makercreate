@@ -1,5 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
 
+@font-face{
+  font-family:'selawik';
+  src: url('/resources/selawk.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face{
+  font-family:'selawik';
+  src: url('/resources/selawkb.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
 html, body {
   background-color: #0C0C0C;
   padding: 0;
@@ -8,7 +21,7 @@ html, body {
 }
 
 .App-header {
-  font-family: "Questrial", sans-serif;
+  font-family: "selawik", "Questrial", sans-serif;
   background-color: #0C0C0C;
   min-height: 100vh;
   display: flex;

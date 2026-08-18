@@ -1,5 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Questrial&display=swap');
 
+@font-face{
+  font-family:'selawik';
+  src: url('/resources/selawk.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face{
+  font-family:'selawik';
+  src: url('/resources/selawkb.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
 html, body {
   background-color: #232F3E;
   padding: 0;
@@ -8,7 +21,7 @@ html, body {
   overflow: hidden;
 }
 body {
-  font-family: "Questrial", sans-serif;
+  font-family: "selawik", "Questrial", sans-serif;
   background-color: #000000;
   height: 100vh;
   display: flex;
