@@ -1,23 +1,41 @@
-<%- include('partials/head', { title: 'Dashboard', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
+<%- include('partials/head', { title: 'Create Project', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
 
-<h1>./Create Project</h1>
-<form method="POST" action="/createprj" class="form" id="createForm" enctype="multipart/form-data">
-    <label for="image">Project Image</label>
-    <input type="file" name="image" id="image" accept="image/*">
-    <input type="text" name="slackId" id="slackId" value="<%= locals.slackId %>" hidden required>
-    <label for="name">Project Name*</label>
-    <input type="text" name="name" id="name" placeholder="Photobooth" required>
-    <label for="description">Project Description*</label>
-    <textarea name="description" id="description" placeholder="This is an 80's inspired photobooth made entirely by hand" required></textarea>
-    <label for="category">Project Category*</label>
-    <input type="radio" name="category" id="CAD" value="CAD" required hidden>
-    <label class="radio-btn" for="CAD">CAD</label>
+<a href="/dashboard" class="btn btn-back">← Back to Dashboard</a>
 
-    <input type="radio" name="category" id="Hardware" value="Hardware" required hidden>
+<div class="settings-header">
+  <h1 class="page-title">./Create Project</h1>
+  <span class="section-subtitle">Publish a new project to your MakerCreate portfolio</span>
+</div>
+
+<div class="section-container">
+  <span class="section-title">Project Details</span>
+  <span class="section-subtitle">Fill in the information below to get started.</span>
+  
+  <form method="POST" action="/createprj" class="form" id="createForm" enctype="multipart/form-data">
+      <label for="image" class="form-label">Project Image</label>
+      <input type="file" name="image" id="image" class="form-input" accept="image/*">
+      
+      <input type="text" name="slackId" id="slackId" value="<%= locals.slackId %>" hidden required>
+      
+      <label for="name" class="form-label">Project Name*</label>
+      <input type="text" name="name" id="name" class="form-input" placeholder="E.g., 80s Photobooth" required>
+      
+      <label for="description" class="form-label">Project Description*</label>
+      <textarea name="description" id="description" class="form-input" placeholder="A brief description of your project..." required></textarea>
+      
+      <label class="form-label">Project Category*</label>
+      <div style="display: flex; gap: 0.5rem; margin-top: 0.2rem;">
+        <input type="radio" name="category" id="CAD" value="CAD" required hidden>
+        <label class="radio-btn" for="CAD">CAD</label>
+
+        <input type="radio" name="category" id="Hardware" value="Hardware" required hidden>
         <label class="radio-btn" for="Hardware">Hardware</label>
-    </input>
-    <button class="aabtn" type="submit">Create Project</button>
-</form>
+      </div>
+
+      <button class="btn btn-primary" type="submit" style="margin-top: 1rem; width: fit-content;">Create Project</button>
+  </form>
+</div>
+
 <script>
     document.getElementById('createForm').addEventListener('submit', function() {
         const btn = this.querySelector('button[type="submit"]');

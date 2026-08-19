@@ -1,81 +1,16 @@
 <%- include('partials/head', { title: 'Settings', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
 
-<style>
-  .settings-header {
-    margin-bottom: 0.6em;
-  }
-  .settings-header h1 {
-    margin: 0;
-    line-height: 0.9;
-    font-size: clamp(1rem, 8vw, 2.8rem);
-    letter-spacing: -0.04em;
-    color: #ffffff;
-  }
-  .settings-header span {
-    display: block;
-    font-size: 0.85em;
-    color: #cccccc;
-    letter-spacing: 0.02em;
-  }
-  .settings-section {
-    display: flex;
-    flex-direction: column;
-    padding: 0.6em 0.7em;
-    border: 2px solid #A5A7A5;
-    margin-bottom: 0.5em;
-  }
 
-  .settings-section-title {
-    font-size: 1.2em;
-    line-height: 1;
-    margin:0;
-    color: #ffffff;
-    font-weight: bold;
-    letter-spacing: 0.02em;
-  }
-  .settings-section-subtitle {
-    display: block;
-    font-size: 0.8em;
-    color: #cccccc;
-    margin-bottom: 0.6em;
-    letter-spacing: 0.01em;
-  }
-  .info-grid {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    row-gap: 0.1em;
-    column-gap: 0.5em;
-    margin-bottom: 0.7em;
-    font-size: 0.88em;
-  }
-  .info-grid .label {
-    color: #dfdfdf;
-    letter-spacing: 0.02em;
-  }
-  .info-grid .value {
-    color: #dfdfdf;
-    font-weight: 500;
-  }
-  .info-grid .value::before {
-    content: ': ';
-    color: #dfdfdf;
-  }
-
-  .btn-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.2em;
-  }
-</style>
+<a href="/dashboard" class="btn btn-back">← Back to Dashboard</a>
 
 <div class="settings-header">
-  <h1>./MakerCreate Settings</h1>
-  <span>These are your settings, <%= locals.name || "" %></span>
+  <h1 class="page-title">./MakerCreate Settings</h1>
+  <span class="section-subtitle">These are your settings, <%= locals.name || "" %></span>
 </div>
 
-<div class="settings-section">
-  <span class="settings-section-title">About me</span>
-  <span class="settings-section-subtitle">Your account details pulled from HackClub Auth.</span>
+<div class="section-container">
+  <span class="section-title">About me</span>
+  <span class="section-subtitle">Your account details pulled from HackClub Auth.</span>
   <div class="info-grid">
     <span class="label">Name</span>
     <span class="value"><%= (locals.name || "undefined") + " " + (locals.lname || "") %></span>
@@ -91,24 +26,24 @@
     <span class="value"><%= locals.actuallogs ?? "—" %></span>
   </div>
   <div class="btn-row">
-    <a href="https://auth.hackclub.com/identity/edit" class="abtn">Edit Profile on HCAuth</a>
+    <a href="https://auth.hackclub.com/identity/edit" class="btn btn-primary">Edit Profile on HCAuth</a>
   </div>
 </div>
 
-<div class="settings-section">
-  <span class="settings-section-title">HackClub Policies</span>
-  <span class="settings-section-subtitle">Review our community guidelines and policies.</span>
+<div class="section-container">
+  <span class="section-title">HackClub Policies</span>
+  <span class="section-subtitle">Review our community guidelines and policies.</span>
   <div class="btn-row">
-    <a href="https://hackclub.com/privacy-and-terms" class="abtn">Privacy Policy</a>
-    <a href="https://hackclub.com/conduct" class="abtn">Code of Conduct</a>
+    <a href="https://hackclub.com/privacy-and-terms" class="btn btn-secondary">Privacy Policy</a>
+    <a href="https://hackclub.com/conduct" class="btn btn-secondary">Code of Conduct</a>
   </div>
 </div>
 
-<div class="settings-section" style="border-color: #971414;">
-  <span class="settings-section-title">Danger Zone</span>
-  <span class="settings-section-subtitle">These actions affect your session</span>
+<div class="section-container" style="border-left: 4px solid var(--accent-danger); padding-left: 1rem;">
+  <span class="section-title">Danger Zone</span>
+  <span class="section-subtitle">These actions affect your session</span>
   <div class="btn-row">
-    <a href="/logout" class="logout abtn">Logout of MakerCreate</a>
+    <a href="/logout" class="btn btn-danger">Logout of MakerCreate</a>
   </div>
 </div>
 

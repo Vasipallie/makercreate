@@ -1,21 +1,54 @@
-<%- include('partials/head', { title: 'Dashboard', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
+<%- include('partials/head', { title: 'HackClub CDN', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
 <style>
-    
-.linkse{
-  color: #b1d88c;
-  
-}
+  .cdn-wrapper {
+    background: transparent;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+    color: white;
+  }
+  .cdn-wrapper h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 300;
+  }
+  .cdn-wrapper p {
+    margin: 0;
+    color: #e0e0e0;
+    font-size: 1.15rem;
+  }
+  .cdn-wrapper form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
 </style>
-<h1>./Hackclub CDN</h1>
-<p>HackClub CDN can help you generate viewable links for your projects.</p>
-<form method="POST" action="/cdn" enctype="multipart/form-data">
-    <input type="file" name="file" id="file" accept="image/*,video/*,audio/*,.zip,.tar,.gz,.7z,.rar,.pdf,.docx,.xlsx,.pptx,.txt,.csv,.json,.xml,.html,.css,.js">
-    <button type="submit" class="aabtn">Upload</button>
-</form>
 
-<div>
-    <% if (locals.cdnlink) { %>
-        <p>CDN Link: <a href="<%= locals.cdnlink %>" class="linkse" target="_blank"><%= locals.cdnlink %></a></p>
-    <% } %>
+<a href="/dashboard" class="btn btn-back">← Back to Dashboard</a>
+
+<div class="settings-header">
+  <h1 class="page-title">./Hackclub CDN</h1>
+  <span class="section-subtitle">HackClub CDN can help you generate viewable links for your projects.</span>
 </div>
+
+<div class="cdn-wrapper">
+  <h2>Upload File</h2>
+  <p>Select a file to upload to the Hack Club CDN.</p>
+  
+  <form method="POST" action="/cdn" enctype="multipart/form-data">
+      <input type="file" name="file" id="file" class="form-file-drop" required>
+      <button class="btn btn-secondary" type="submit">Upload to CDN</button>
+  </form>
+</div>
+
+<% if (locals.cdnlink) { %>
+    <div class="cdn-wrapper" style="margin-top: 1rem;">
+        <h2>Upload Successful</h2>
+        <p>Your file has been uploaded.</p>
+        <a class="linkse" href="<%= locals.cdnlink %>" target="_blank" style="color: #ffffff; text-decoration: underline; word-break: break-all; font-size: 1.25rem; margin-top: 0.5rem; display: block;"><%= locals.cdnlink %></a>
+    </div>
+<% } %>
+
 <%- include('partials/foot') %>

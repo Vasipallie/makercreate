@@ -1,15 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
 
+@font-face{
+  font-family:'selawik';
+  src: url('/resources/selawk.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face{
+  font-family:'selawik';
+  src: url('/resources/selawkb.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
 html, body {
-  background-color: #0C0C0C;
+  background-color: #11090F;
   padding: 0;
   margin: 0;
   height: 100%;
 }
 
+body {
+  background: radial-gradient(circle, #2E292D, #140D12,  #11090F 100%);
+}
+
 .App-header {
-  font-family: "Questrial", sans-serif;
-  background-color: #0C0C0C;
+  font-family: "selawik", "Questrial", sans-serif;
+  background-color: #000000;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -51,8 +68,8 @@ p {
   width: 100%;
   max-height: 300px;
   object-fit: cover;
-  border: 2px solid #D9D5C8;
-  padding: 0.2em;
+  border: none;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -73,14 +90,16 @@ p {
 
 tag {
   font-size: 0.8em;
-  background-color: #DA532C;
+  background-color: #FA6800;
   color: #ffffff;
   padding: 0.4em 0.8em;
   display: flex;
   align-items: center;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  border-radius: 0;
 }
+
 
 .prjdesc {
   font-size: 0.85em;
@@ -88,20 +107,22 @@ tag {
 }
 
 .prjbtn {
-  border: 1px solid #3b4238;
-  background-color: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: transparent;
   color: #ffffff;
-  padding: 0.4em 0.9em;
-  font-family: "Questrial", monospace;
-  font-size: 0.9em;
+  padding: 0.5em 1em;
+  font-family: "selawik", "Questrial", sans-serif;
+  font-size: 0.95em;
   text-decoration: none;
-  display: inline-block;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.1s ease;
+  border-radius: 0;
 }
-
 .prjbtn:hover {
-  border-color: #D9D5C8;
-  color: #D9D5C8;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .imghold .prjbtn {
@@ -116,34 +137,34 @@ tag {
   color: #9b9b9b;
   margin-top: 0.6em;
 }
- 
+
 .fieldinput {
   width: 100%;
-  background-color: #000000;
-  border: 1px solid #3b4238;
-  color: #D9D5C8;
-  font-family: "Questrial", monospace;
+  background-color: #1a1218;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-family: "selawik", "Questrial", sans-serif;
   font-size: 0.9em;
-  padding: 0.5em 0.7em;
+  padding: 0.55em 0.7em;
   box-sizing: border-box;
   transition: border-color 0.15s ease;
 }
- 
+
 .fieldinput:focus {
   outline: none;
-  border-color: #D9D5C8;
+  border-color: #0050EF;
 }
- 
+
 textarea.fieldinput {
   resize: vertical;
   font-family: "Questrial", sans-serif;
   line-height: 1.4em;
 }
- 
+
 select.fieldinput {
   cursor: pointer;
 }
- 
+
 button.prjbtn {
   cursor: pointer;
 }
@@ -152,8 +173,8 @@ button.prjbtn {
   width: 100%;
   max-height: 15em;
   object-fit: cover;
-  border: 2px solid #D9D5C8;
-  padding: 0.2em;
+  border: none;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -212,14 +233,22 @@ button.prjbtn {
   border: 0;
 }
 
+.journal-content img, .journal-content video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 0.5em 0;
+}
+
   .settings-section {
     display: flex;
     flex-direction: column;
-    padding: 0.6em 0.7em;
-    border: 2px solid #A5A7A5;
+    padding: 0.8em 1em;
+    border: none;
+    background-color: #111111;
     margin-bottom: 0.5em;
   }
-  
+
 .logout{
   text-decoration:none;
   color:#ffffff;
@@ -249,12 +278,13 @@ button.prjbtn {
 
 .popupper-card {
   width: min(520px, 100%);
-  border: 2px solid #971414;
-  background: #121212;
-  color: #D9D5C8;
-  padding: 1.1rem;
+  border: none;
+  background: #0050EF;
+  color: #ffffff;
+  padding: 1.5rem;
   box-sizing: border-box;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+  border-radius: 0;
 }
 
 .popupper-card h2 {
@@ -284,3 +314,82 @@ button.prjbtn {
   padding-inline:0.5em;
   background-color:#971414;
 }
+
+@media (max-width: 768px) {
+  .App-header {
+    padding: 1em;
+    font-size: calc(9px + 2vmin);
+    gap: 0.4em;
+  }
+  h1 {
+    font-size: clamp(1.1rem, 6vw, 2rem);
+  }
+  .imghold {
+    max-width: 100%;
+  }
+  .imghold img,
+  .prjimgi {
+    max-height: 200px;
+  }
+  .prjinfo {
+    max-width: 100%;
+  }
+  .prjdesc {
+    font-size: 0.8em;
+    line-height: 1.3em;
+  }
+  .prjbtn {
+    padding: 0.5em 0.8em;
+    font-size: 0.85em;
+  }
+  .tags {
+    flex-wrap: wrap;
+  }
+  tag {
+    font-size: 0.7em;
+    padding: 0.35em 0.6em;
+  }
+  .fieldinput {
+    font-size: 0.85em;
+    padding: 0.5em 0.6em;
+  }
+  .settings-section {
+    padding: 0.5em;
+  }
+  .popupper-card {
+    width: 100%;
+    padding: 0.9rem;
+  }
+  .popupper-card h2 {
+    font-size: clamp(0.95rem, 3vw, 1.2rem);
+  }
+  .popupper-actions {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .popupper-actions button,
+  .popupper-actions .prjbtn {
+    width: 100%;
+    text-align: center;
+  }
+  .image-picker-wrapper {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .App-header {
+    padding: 0.6em;
+  }
+  h1 {
+    font-size: clamp(1rem, 6vw, 1.6rem);
+  }
+  .prjbtn {
+    padding: 0.4em 0.6em;
+    font-size: 0.8em;
+  }
+  .imghold img,
+  .prjimgi {
+    max-height: 160px;
+  }
+}
