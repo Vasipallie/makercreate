@@ -1,29 +1,29 @@
 <%- include('partials/head', { title: 'Create Project', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
 
-<a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+<a href="/dashboard" class="btn btn-back">← Back to Dashboard</a>
 
 <div class="settings-header">
-  <h1>./Create Project</h1>
-  <span>Publish a new project to your MakerCreate portfolio</span>
+  <h1 class="page-title">./Create Project</h1>
+  <span class="section-subtitle">Publish a new project to your MakerCreate portfolio</span>
 </div>
 
-<div class="settings-section">
-  <span class="settings-section-title">Project Details</span>
-  <span class="settings-section-subtitle">Fill in the information below to get started.</span>
+<div class="section-container">
+  <span class="section-title">Project Details</span>
+  <span class="section-subtitle">Fill in the information below to get started.</span>
   
   <form method="POST" action="/createprj" class="form" id="createForm" enctype="multipart/form-data">
-      <label for="image">Project Image</label>
-      <input type="file" name="image" id="image" accept="image/*">
+      <label for="image" class="form-label">Project Image</label>
+      <input type="file" name="image" id="image" class="form-input" accept="image/*">
       
       <input type="text" name="slackId" id="slackId" value="<%= locals.slackId %>" hidden required>
       
-      <label for="name">Project Name*</label>
-      <input type="text" name="name" id="name" placeholder="E.g., 80s Photobooth" required>
+      <label for="name" class="form-label">Project Name*</label>
+      <input type="text" name="name" id="name" class="form-input" placeholder="E.g., 80s Photobooth" required>
       
-      <label for="description">Project Description*</label>
-      <textarea name="description" id="description" placeholder="A brief description of your project..." required></textarea>
+      <label for="description" class="form-label">Project Description*</label>
+      <textarea name="description" id="description" class="form-input" placeholder="A brief description of your project..." required></textarea>
       
-      <label>Project Category*</label>
+      <label class="form-label">Project Category*</label>
       <div style="display: flex; gap: 0.5rem; margin-top: 0.2rem;">
         <input type="radio" name="category" id="CAD" value="CAD" required hidden>
         <label class="radio-btn" for="CAD">CAD</label>
@@ -32,7 +32,7 @@
         <label class="radio-btn" for="Hardware">Hardware</label>
       </div>
 
-      <button class="aabtn" type="submit" style="margin-top: 1rem;">Create Project</button>
+      <button class="btn btn-primary" type="submit" style="margin-top: 1rem; width: fit-content;">Create Project</button>
   </form>
 </div>
 

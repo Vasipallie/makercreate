@@ -1,27 +1,53 @@
 <%- include('partials/head', { title: 'HackClub CDN', logs: locals.log, pfp: locals.pfp, name: locals.name }) %>
+<style>
+  .cdn-wrapper {
+    background: transparent;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+    color: white;
+  }
+  .cdn-wrapper h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 300;
+  }
+  .cdn-wrapper p {
+    margin: 0;
+    color: #e0e0e0;
+    font-size: 1.15rem;
+  }
+  .cdn-wrapper form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+</style>
 
-<a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+<a href="/dashboard" class="btn btn-back">← Back to Dashboard</a>
 
 <div class="settings-header">
-  <h1>./Hackclub CDN</h1>
-  <span>HackClub CDN can help you generate viewable links for your projects.</span>
+  <h1 class="page-title">./Hackclub CDN</h1>
+  <span class="section-subtitle">HackClub CDN can help you generate viewable links for your projects.</span>
 </div>
 
-<div class="settings-section">
-  <span class="settings-section-title">Upload File</span>
-  <span class="settings-section-subtitle">Select a file to upload to the Hack Club CDN.</span>
+<div class="cdn-wrapper">
+  <h2>Upload File</h2>
+  <p>Select a file to upload to the Hack Club CDN.</p>
   
-  <form method="POST" action="/cdn" enctype="multipart/form-data" class="form">
-      <input type="file" name="file" id="file" required>
-      <button class="aabtn" type="submit" style="margin-top: 1rem;">Upload File</button>
+  <form method="POST" action="/cdn" enctype="multipart/form-data">
+      <input type="file" name="file" id="file" class="form-file-drop" required>
+      <button class="btn btn-secondary" type="submit">Upload to CDN</button>
   </form>
 </div>
 
 <% if (locals.cdnlink) { %>
-    <div class="settings-section" style="margin-top: 1rem;">
-        <span class="settings-section-title" style="color: #F0A30A;">Upload Successful</span>
-        <span class="settings-section-subtitle">Your file has been uploaded to the CDN.</span>
-        <a class="linkse" href="<%= locals.cdnlink %>" target="_blank"><%= locals.cdnlink %></a>
+    <div class="cdn-wrapper" style="margin-top: 1rem;">
+        <h2>Upload Successful</h2>
+        <p>Your file has been uploaded.</p>
+        <a class="linkse" href="<%= locals.cdnlink %>" target="_blank" style="color: #ffffff; text-decoration: underline; word-break: break-all; font-size: 1.25rem; margin-top: 0.5rem; display: block;"><%= locals.cdnlink %></a>
     </div>
 <% } %>
 

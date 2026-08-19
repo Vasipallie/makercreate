@@ -14,10 +14,14 @@
 }
 
 html, body {
-  background-color: #000000;
+  background-color: #11090F;
   padding: 0;
   margin: 0;
   height: 100%;
+}
+
+body {
+  background: radial-gradient(circle, #2E292D, #140D12,  #11090F 100%);
 }
 
 .App-header {
@@ -96,31 +100,29 @@ tag {
   border-radius: 0;
 }
 
+
 .prjdesc {
   font-size: 0.85em;
   line-height: 0.9em;
 }
 
 .prjbtn {
-  border: none;
-  background-color: #0050EF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: transparent;
   color: #ffffff;
   padding: 0.5em 1em;
   font-family: "selawik", "Questrial", sans-serif;
   font-size: 0.95em;
   text-decoration: none;
-  display: inline-block;
-  transition: opacity 0.1s ease, transform 0.1s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.1s ease;
   border-radius: 0;
 }
-
 .prjbtn:hover {
-  opacity: 0.85;
+  background-color: rgba(255, 255, 255, 0.1);
   color: #ffffff;
-}
-.prjbtn:active {
-  opacity: 0.7;
-  transform: scale(0.98);
 }
 
 .imghold .prjbtn {

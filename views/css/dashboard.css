@@ -503,21 +503,21 @@ input[type="radio"]:checked + .radio-btn {
   flex-direction: column;
   padding: 0.8em 1em;
   border: none;
-  background-color: #111111;
+  background-color: transparent;
   margin-bottom: 0.5em;
 }
 .settings-section-title {
-  font-size: 1.1em;
+  font-size: 1.8rem;
   line-height: 1;
   margin: 0;
   color: #ffffff;
-  font-weight: bold;
+  font-weight: 300;
   letter-spacing: 0.02em;
 }
 .settings-section-subtitle {
   display: block;
-  font-size: 0.8em;
-  color: #cccccc;
+  font-size: 1rem;
+  color: #e0e0e0;
   margin-bottom: 0.6em;
   letter-spacing: 0.01em;
 }
