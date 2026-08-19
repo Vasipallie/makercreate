@@ -592,16 +592,154 @@
             const identity = sesh?.identity?.identity || {};
             const loggedout = !identity.slack_id;
             const owner = project[0].get('SlackId') === identity.slack_id;
+            
+            const journals = await base('Journals').select({
+                filterByFormula: `{ProjectID} = "${prjid}"`
+            }).all();
+
+            let hackHrs = 0;
+            const hName = project[0].get('Hackatime');
+            if (hName) {
+                const ownerSlackId = project[0].get('SlackId');
+                const slackcheck = await base('Users').select({
+                    filterByFormula: `{SlackId} = "${ownerSlackId}"`,
+                    maxRecords: 1
+                }).firstPage();
+                
+                if (slackcheck.length > 0) {
+                    const hacktoken = slackcheck[0].get('HackatimeToken');
+                    if (hacktoken) {
+                        try {
+                            const hRes = await fetch('https://hackatime.hackclub.com/api/v1/authenticated/projects', {
+                                headers: { 'Authorization': `Bearer ${hacktoken}` }
+                            });
+                            const hData = await hRes.json();
+                            if (hData.projects) {
+                                const matched = hData.projects.find(p => p.name === hName);
+                                if (matched && matched.total_seconds) {
+                                    hackHrs = matched.total_seconds / 3600;
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Error fetching Hackatime for project page:', e);
+                        }
+                    }
+                }
+            }
+
             res.render('project', {
                 project: project[0], 
                 owner, 
                 loggedout,
                 slackID: identity.slack_id,
-                email: identity.primary_email 
+                email: identity.primary_email,
+                journals: journals || [],
+                hackHrs
             });
         } catch (error) {
             console.error('Error fetching project:', error);
             res.status(500).redirect('/error/Unable to retrieve project data');
+        }
+    });
+    app.post('/project/:id/journal', async (req, res) => {
+        try {
+            const prjid = req.params.id;
+            const project = await base('Projects').select({
+                filterByFormula: `{ProjectID} = "${prjid}"`,
+                maxRecords:1
+            }).firstPage();
+            if (project.length === 0){
+                return res.status(404).json({error: 'Project not found'});
+            }
+            const sesh = getSession(req);
+            const identity = sesh?.identity?.identity || {};
+            if (project[0].get('SlackId') !== identity.slack_id) {
+                return res.status(403).json({error: 'Unauthorized'});
+            }
+            
+            const { journalContent, journalTime } = req.body;
+            
+            if (!journalContent || journalContent.length < 200) {
+                return res.status(400).json({error: 'Journal must be at least 200 characters.'});
+            }
+            
+            const hasImage = /!\[.*?\]\(.*?\)|<img.*?src=".*?".*?>/i.test(journalContent);
+            if (!hasImage) {
+                return res.status(400).json({error: 'Journal must contain at least 1 image or video.'});
+            }
+
+            const jTime = parseFloat(journalTime) || 0;
+
+            await base('Journals').create([
+                {
+                    fields: {
+                        ProjectID: parseInt(prjid, 10),
+                        Journal: journalContent,
+                        journal_time: jTime
+                    }
+                }
+            ]);
+
+            try {
+                const currentTotal = parseFloat(project[0].get('total_journaled_time')) || 0;
+                await base('Projects').update([
+                    {
+                        id: project[0].id,
+                        fields: {
+                            total_journaled_time: currentTotal + jTime
+                        }
+                    }
+                ]);
+            } catch (err) {
+                console.log('Skipping total_journaled_time update (might be a computed field):', err.message);
+            }
+
+            res.json({success: true});
+        } catch (error) {
+            console.error('Error saving journal:', error);
+            res.status(500).json({error: 'Failed to save journal.'});
+        }
+    });
+    app.delete('/project/:id/journal/:journalId', async (req, res) => {
+        try {
+            const prjid = req.params.id;
+            const journalAirtableId = req.params.journalId;
+            const project = await base('Projects').select({
+                filterByFormula: `{ProjectID} = "${prjid}"`,
+                maxRecords: 1
+            }).firstPage();
+            if (project.length === 0) {
+                return res.status(404).json({ error: 'Project not found' });
+            }
+            const sesh = getSession(req);
+            const identity = sesh?.identity?.identity || {};
+            if (project[0].get('SlackId') !== identity.slack_id) {
+                return res.status(403).json({ error: 'Unauthorized' });
+            }
+
+            const journal = await base('Journals').find(journalAirtableId);
+            const jTime = parseFloat(journal.get('journal_time')) || 0;
+
+            await base('Journals').destroy([journalAirtableId]);
+
+            if (jTime > 0) {
+                try {
+                    const currentTotal = parseFloat(project[0].get('total_journaled_time')) || 0;
+                    await base('Projects').update([{
+                        id: project[0].id,
+                        fields: {
+                            total_journaled_time: Math.max(0, currentTotal - jTime)
+                        }
+                    }]);
+                } catch (err) {
+                    console.log('Skipping total_journaled_time update on delete:', err.message);
+                }
+            }
+
+            res.json({ success: true });
+        } catch (error) {
+            console.error('Error deleting journal:', error);
+            res.status(500).json({ error: 'Failed to delete journal.' });
         }
     });
     app.post('/cdn', upload.single('file'), async (req, res) => {
@@ -626,6 +764,31 @@
             res.render('cdn', { cdnlink: json.url, name: data.fname, pfp: data.pfp, log: data.log });
         } catch (error) {
             console.error('CDN upload error:', error);
+            res.status(500).json({ error: 'CDN upload failed' });
+        }
+    });
+    app.post('/api/upload', upload.single('file'), async (req, res) => {
+        const sesh = getSession(req);
+        if (!sesh || !sesh.identity) return res.status(401).json({error: 'Unauthorized'});
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+        const formData = new FormData();
+        const blob = new Blob([req.file.buffer], { type: req.file.mimetype });
+        formData.append('file', blob, req.file.originalname);
+        try {
+            const response = await fetch('https://cdn.hackclub.com/api/v4/upload', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${HCDN}` },
+                body: formData
+            });
+            const json = await response.json();
+            if (!response.ok) {
+                throw new Error(json.error || 'CDN upload failed');
+            }
+            res.json({ url: json.url });
+        } catch (error) {
+            console.error('API upload error:', error);
             res.status(500).json({ error: 'CDN upload failed' });
         }
     });
